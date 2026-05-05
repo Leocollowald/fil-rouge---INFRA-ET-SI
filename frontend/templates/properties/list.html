@@ -1,0 +1,212 @@
+{% extends "base.html" %}
+{% block title %}Annonces — Y-Plaza{% endblock %}
+
+{% block content %}
+<section class="page-header">
+  <div class="container">
+    <h1>Nos annonces</h1>
+    <p>Trouvez le bien qui vous correspond parmi nos offres</p>
+  </div>
+</section>
+
+<div class="container listings-layout">
+
+  <!-- Filtres -->
+  <aside class="filters-panel" aria-label="Filtres de recherche">
+    <h2 class="filters-panel__title">Filtrer</h2>
+    <form id="filters-form">
+
+      <fieldset class="filter-group">
+        <legend>Type de transaction</legend>
+        <label class="radio-label">
+          <input type="radio" name="transaction_type" value="" checked /> Tous
+        </label>
+        <label class="radio-label">
+          <input type="radio" name="transaction_type" value="sale" /> Vente
+        </label>
+        <label class="radio-label">
+          <input type="radio" name="transaction_type" value="rental" /> Location
+        </label>
+      </fieldset>
+
+      <div class="filter-group">
+        <label for="f-ptype" class="filter-label">Type de bien</label>
+        <select id="f-ptype" name="property_type" class="select select--full">
+          <option value="">Tous</option>
+          <option value="apartment">Appartement</option>
+          <option value="house">Maison</option>
+          <option value="commercial">Local commercial</option>
+          <option value="land">Terrain</option>
+          <option value="office">Bureau</option>
+        </select>
+      </div>
+
+      <div class="filter-group">
+        <label for="f-city" class="filter-label">Ville</label>
+        <input id="f-city" name="city" type="text" class="input" placeholder="Ex: Paris, Lyon…" />
+      </div>
+
+      <div class="filter-group">
+        <label class="filter-label">Prix (€)</label>
+        <div class="range-inputs">
+          <input name="min_price" type="number" class="input" placeholder="Min" min="0" />
+          <span>—</span>
+          <input name="max_price" type="number" class="input" placeholder="Max" min="0" />
+        </div>
+      </div>
+
+      <div class="filter-group">
+        <label for="f-surface" class="filter-label">Surface min (m²)</label>
+        <input id="f-surface" name="min_surface" type="number" class="input" placeholder="Ex: 30" min="0" />
+      </div>
+
+      <div class="filter-group">
+        <label for="f-rooms" class="filter-label">Pièces min</label>
+        <input id="f-rooms" name="rooms" type="number" class="input" placeholder="Ex: 2" min="1" max="20" />
+      </div>
+
+      <button type="submit" class="btn btn--primary btn--full">Appliquer</button>
+      <button type="reset" class="btn btn--ghost btn--full" id="reset-btn">Réinitialiser</button>
+    </form>
+  </aside>
+
+  <!-- Liste des biens -->
+  <section class="listings-main" aria-labelledby="results-title">
+    <div class="listings-header">
+      <h2 id="results-title">
+        <span id="results-count">—</span> bien(s) trouvé(s)
+      </h2>
+      <div class="listings-sort">
+        <label for="sort-select" class="sr-only">Trier par</label>
+        <select id="sort-select" class="select">
+          <option>Les plus récents</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="properties-grid" id="properties-grid" aria-live="polite" aria-busy="true">
+      <!-- Skeletons -->
+      <div class="property-card property-card--skeleton" aria-hidden="true"></div>
+      <div class="property-card property-card--skeleton" aria-hidden="true"></div>
+      <div class="property-card property-card--skeleton" aria-hidden="true"></div>
+    </div>
+
+    <div class="pagination" id="pagination" aria-label="Pagination"></div>
+  </section>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  let currentPage = 1;
+  const params = new URLSearchParams(window.location.search);
+
+  // Pré-remplir les filtres depuis l'URL
+  document.querySelectorAll('#filters-form [name]').forEach(el => {
+    const val = params.get(el.name);
+    if (!val) return;
+    if (el.type === 'radio') { if (el.value === val) el.checked = true; }
+    else el.value = val;
+  });
+
+  function buildFilters() {
+    const form = document.getElementById('filters-form');
+    const data = new FormData(form);
+    const q = new URLSearchParams();
+    for (const [k, v] of data.entries()) {
+      if (v) q.append(k, v);
+    }
+    q.set('page', currentPage);
+    q.set('per_page', 12);
+    return q;
+  }
+
+  async function loadProperties() {
+    const grid = document.getElementById('properties-grid');
+    grid.setAttribute('aria-busy', 'true');
+    const q = buildFilters();
+    try {
+      const res = await fetch(`/api/v1/properties/?${q}`);
+      const data = await res.json();
+      document.getElementById('results-count').textContent = data.total;
+      grid.setAttribute('aria-busy', 'false');
+
+      if (!data.items.length) {
+        grid.innerHTML = '<p class="empty-state col-span-full">Aucun bien ne correspond à votre recherche.</p>';
+        document.getElementById('pagination').innerHTML = '';
+        return;
+      }
+
+      grid.innerHTML = data.items.map(renderCard).join('');
+      renderPagination(data.page, data.pages);
+    } catch {
+      grid.innerHTML = '<p class="empty-state col-span-full">Erreur lors du chargement.</p>';
+    }
+  }
+
+  document.getElementById('filters-form').addEventListener('submit', (e) => {
+    e.preventDefault();
+    currentPage = 1;
+    loadProperties();
+  });
+
+  document.getElementById('reset-btn').addEventListener('click', () => {
+    currentPage = 1;
+    loadProperties();
+  });
+
+  function renderPagination(page, pages) {
+    if (pages <= 1) { document.getElementById('pagination').innerHTML = ''; return; }
+    let html = '';
+    for (let i = 1; i <= pages; i++) {
+      html += `<button class="page-btn ${i === page ? 'page-btn--active' : ''}" onclick="goToPage(${i})">${i}</button>`;
+    }
+    document.getElementById('pagination').innerHTML = html;
+  }
+
+  function goToPage(n) {
+    currentPage = n;
+    loadProperties();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function renderCard(p) {
+    const img = p.images.length
+      ? (p.images.find(i => i.is_primary)?.url || p.images[0].url)
+      : '/static/images/placeholder.svg';
+    const price = parseInt(p.price).toLocaleString('fr-FR') + ' €';
+    const typeLabel = {'apartment':'Appartement','house':'Maison','commercial':'Local commercial','land':'Terrain','office':'Bureau'}[p.property_type] || p.property_type;
+    const txLabel = p.transaction_type === 'sale' ? 'Vente' : 'Location';
+
+    return `
+      <article class="property-card">
+        <a href="/annonces/${p.id}" class="property-card__link" aria-label="${p.title}">
+          <div class="property-card__img-wrapper">
+            <img src="${img}" alt="${p.title}" class="property-card__img" loading="lazy" />
+            <span class="badge badge--${p.transaction_type}">${txLabel}</span>
+          </div>
+          <div class="property-card__body">
+            <p class="property-card__type">${typeLabel}</p>
+            <h3 class="property-card__title">${p.title}</h3>
+            <p class="property-card__location">
+              <svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+              ${p.city} (${p.zip_code})
+            </p>
+            <div class="property-card__meta">
+              ${p.surface ? `<span>${p.surface} m²</span>` : ''}
+              ${p.rooms ? `<span>${p.rooms} pièce${p.rooms > 1 ? 's' : ''}</span>` : ''}
+              ${p.bedrooms ? `<span>${p.bedrooms} ch.</span>` : ''}
+              ${p.bathrooms ? `<span>${p.bathrooms} sdb</span>` : ''}
+            </div>
+            <p class="property-card__price">${price}${p.transaction_type === 'rental' ? '<span class="price-unit">/mois</span>' : ''}</p>
+          </div>
+        </a>
+        <button class="btn-favorite" aria-label="Ajouter aux favoris" data-id="${p.id}" onclick="toggleFavorite(this)">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+        </button>
+      </article>`;
+  }
+
+  loadProperties();
+</script>
+{% endblock %}

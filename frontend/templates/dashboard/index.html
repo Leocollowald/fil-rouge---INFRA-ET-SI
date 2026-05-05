@@ -1,0 +1,253 @@
+{% extends "base.html" %}
+{% block title %}Mon espace — Y-Plaza{% endblock %}
+
+{% block content %}
+<div class="dashboard-layout container">
+
+  <!-- Sidebar -->
+  <aside class="dashboard-sidebar" aria-label="Navigation dashboard">
+    <div class="sidebar__user" id="sidebar-user">
+      <div class="avatar" id="sidebar-avatar" aria-hidden="true">?</div>
+      <div>
+        <p class="sidebar__name" id="sidebar-name">Chargement…</p>
+        <p class="sidebar__role" id="sidebar-role"></p>
+      </div>
+    </div>
+
+    <nav>
+      <ul class="sidebar__menu" role="list">
+        <li><a href="#overview" class="sidebar__link sidebar__link--active" data-tab="overview">Vue d'ensemble</a></li>
+        <li><a href="#favorites" class="sidebar__link" data-tab="favorites">Mes favoris</a></li>
+        <li><a href="#transactions" class="sidebar__link" data-tab="transactions">Mes demandes</a></li>
+        <li class="sidebar__divider agent-only hidden"><span>Agent</span></li>
+        <li class="agent-only hidden"><a href="#my-properties" class="sidebar__link" data-tab="my-properties">Mes annonces</a></li>
+        <li class="agent-only hidden"><a href="#add-property" class="sidebar__link" data-tab="add-property">Ajouter un bien</a></li>
+        <li class="sidebar__divider admin-only hidden"><span>Admin</span></li>
+        <li class="admin-only hidden"><a href="#users" class="sidebar__link" data-tab="users">Utilisateurs</a></li>
+      </ul>
+    </nav>
+  </aside>
+
+  <!-- Contenu principal -->
+  <main class="dashboard-main" id="dashboard-content">
+
+    <!-- Vue d'ensemble -->
+    <section id="tab-overview" class="tab-panel" aria-labelledby="overview-title">
+      <h1 id="overview-title">Bonjour, <span id="welcome-name">—</span> 👋</h1>
+      <div class="stats-row" id="overview-stats">
+        <div class="mini-stat"><span class="mini-stat__number" id="stat-favorites">—</span><span>Favoris</span></div>
+        <div class="mini-stat"><span class="mini-stat__number" id="stat-requests">—</span><span>Demandes</span></div>
+      </div>
+      <div class="recent-activity">
+        <h2>Annonces récentes</h2>
+        <div class="properties-grid" id="overview-properties"></div>
+      </div>
+    </section>
+
+    <!-- Favoris -->
+    <section id="tab-favorites" class="tab-panel hidden" aria-labelledby="favorites-title">
+      <h1 id="favorites-title">Mes favoris</h1>
+      <div class="properties-grid" id="favorites-list" aria-live="polite"></div>
+    </section>
+
+    <!-- Mes demandes -->
+    <section id="tab-transactions" class="tab-panel hidden" aria-labelledby="transactions-title">
+      <h1 id="transactions-title">Mes demandes</h1>
+      <p class="empty-state">Aucune demande en cours.</p>
+    </section>
+
+    <!-- Mes annonces (agent) -->
+    <section id="tab-my-properties" class="tab-panel hidden agent-only" aria-labelledby="my-props-title">
+      <h1 id="my-props-title">Mes annonces</h1>
+      <div class="properties-grid" id="my-properties-list" aria-live="polite"></div>
+    </section>
+
+    <!-- Ajouter un bien (agent) -->
+    <section id="tab-add-property" class="tab-panel hidden agent-only" aria-labelledby="add-prop-title">
+      <h1 id="add-prop-title">Ajouter un bien</h1>
+      <form id="add-property-form" class="property-form">
+        <div class="form-grid">
+          <div class="form-group form-group--full">
+            <label for="p-title" class="form-label">Titre de l'annonce *</label>
+            <input id="p-title" name="title" type="text" class="input" required placeholder="Ex: Appartement lumineux 3 pièces centre-ville" />
+          </div>
+          <div class="form-group">
+            <label for="p-type" class="form-label">Type de bien *</label>
+            <select id="p-type" name="property_type" class="select" required>
+              <option value="apartment">Appartement</option>
+              <option value="house">Maison</option>
+              <option value="commercial">Local commercial</option>
+              <option value="land">Terrain</option>
+              <option value="office">Bureau</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="p-tx" class="form-label">Transaction *</label>
+            <select id="p-tx" name="transaction_type" class="select" required>
+              <option value="sale">Vente</option>
+              <option value="rental">Location</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="p-price" class="form-label">Prix (€) *</label>
+            <input id="p-price" name="price" type="number" class="input" required min="1" />
+          </div>
+          <div class="form-group">
+            <label for="p-surface" class="form-label">Surface (m²)</label>
+            <input id="p-surface" name="surface" type="number" class="input" min="1" />
+          </div>
+          <div class="form-group">
+            <label for="p-rooms" class="form-label">Pièces</label>
+            <input id="p-rooms" name="rooms" type="number" class="input" min="1" />
+          </div>
+          <div class="form-group">
+            <label for="p-bedrooms" class="form-label">Chambres</label>
+            <input id="p-bedrooms" name="bedrooms" type="number" class="input" min="0" />
+          </div>
+          <div class="form-group">
+            <label for="p-bathrooms" class="form-label">Salles de bain</label>
+            <input id="p-bathrooms" name="bathrooms" type="number" class="input" min="0" />
+          </div>
+          <div class="form-group">
+            <label for="p-city" class="form-label">Ville *</label>
+            <input id="p-city" name="city" type="text" class="input" required />
+          </div>
+          <div class="form-group">
+            <label for="p-zip" class="form-label">Code postal *</label>
+            <input id="p-zip" name="zip_code" type="text" class="input" required maxlength="5" />
+          </div>
+          <div class="form-group form-group--full">
+            <label for="p-address" class="form-label">Adresse *</label>
+            <input id="p-address" name="address" type="text" class="input" required />
+          </div>
+          <div class="form-group form-group--full">
+            <label for="p-desc" class="form-label">Description</label>
+            <textarea id="p-desc" name="description" class="textarea" rows="5" placeholder="Décrivez le bien…"></textarea>
+          </div>
+        </div>
+
+        <div id="form-alert" class="alert hidden" role="alert"></div>
+        <button type="submit" class="btn btn--primary">
+          <span class="btn__text">Publier l'annonce</span>
+          <span class="btn__loader hidden"></span>
+        </button>
+      </form>
+    </section>
+
+  </main>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  const user = JSON.parse(localStorage.getItem('yplaza_user') || 'null');
+  const token = localStorage.getItem('yplaza_token');
+
+  if (!user || !token) {
+    window.location.href = '/connexion';
+  }
+
+  // Affichage infos utilisateur
+  const agentRoles = ['commercial', 'direction', 'it_support'];
+  const adminRoles = ['direction', 'it_support'];
+
+  document.getElementById('sidebar-name').textContent = `${user.first_name} ${user.last_name}`;
+  document.getElementById('sidebar-role').textContent = formatRole(user.role);
+  document.getElementById('sidebar-avatar').textContent = user.first_name[0].toUpperCase();
+  document.getElementById('welcome-name').textContent = user.first_name;
+
+  if (agentRoles.includes(user.role)) {
+    document.querySelectorAll('.agent-only').forEach(el => el.classList.remove('hidden'));
+  }
+  if (adminRoles.includes(user.role)) {
+    document.querySelectorAll('.admin-only').forEach(el => el.classList.remove('hidden'));
+  }
+
+  // Navigation par onglets
+  document.querySelectorAll('.sidebar__link[data-tab]').forEach(link => {
+    link.addEventListener('click', (e) => {
+      e.preventDefault();
+      const tab = link.dataset.tab;
+      document.querySelectorAll('.sidebar__link').forEach(l => l.classList.remove('sidebar__link--active'));
+      document.querySelectorAll('.tab-panel').forEach(p => p.classList.add('hidden'));
+      link.classList.add('sidebar__link--active');
+      document.getElementById(`tab-${tab}`).classList.remove('hidden');
+
+      if (tab === 'favorites') loadFavorites();
+      if (tab === 'my-properties') loadMyProperties();
+    });
+  });
+
+  // Chargement favoris
+  async function loadFavorites() {
+    const container = document.getElementById('favorites-list');
+    container.innerHTML = '<p>Chargement…</p>';
+    const res = await fetch('/api/v1/properties/me/favorites', {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    if (!res.ok) { container.innerHTML = '<p class="empty-state">Impossible de charger les favoris.</p>'; return; }
+    const items = await res.json();
+    document.getElementById('stat-favorites').textContent = items.length;
+    container.innerHTML = items.length
+      ? items.map(renderMiniCard).join('')
+      : '<p class="empty-state">Vous n\'avez aucun favori pour le moment.</p>';
+  }
+
+  // Ajout d'un bien
+  document.getElementById('add-property-form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const form = e.target;
+    const btn = form.querySelector('button[type=submit]');
+    const alert = document.getElementById('form-alert');
+    btn.disabled = true;
+    alert.className = 'alert hidden';
+
+    const payload = {};
+    new FormData(form).forEach((v, k) => {
+      if (v) payload[k] = ['price','surface','rooms','bedrooms','bathrooms'].includes(k) ? Number(v) : v;
+    });
+
+    const res = await fetch('/api/v1/properties/', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+      body: JSON.stringify(payload),
+    });
+
+    btn.disabled = false;
+    const data = await res.json();
+    if (!res.ok) {
+      alert.textContent = data.detail || 'Erreur lors de la publication.';
+      alert.className = 'alert alert--error';
+      return;
+    }
+    alert.textContent = 'Annonce publiée avec succès !';
+    alert.className = 'alert alert--success';
+    form.reset();
+  });
+
+  function renderMiniCard(p) {
+    const price = parseInt(p.price).toLocaleString('fr-FR') + ' €';
+    return `<article class="property-card">
+      <a href="/annonces/${p.id}" class="property-card__link">
+        <div class="property-card__body">
+          <h3 class="property-card__title">${p.title}</h3>
+          <p class="property-card__location">${p.city}</p>
+          <p class="property-card__price">${price}</p>
+        </div>
+      </a>
+    </article>`;
+  }
+
+  function formatRole(role) {
+    const map = {
+      client: 'Client',
+      commercial: 'Agent commercial',
+      direction: 'Direction',
+      communication_marketing: 'Communication & Marketing',
+      administratif_rh: 'Administratif / RH',
+      it_support: 'IT & Support',
+    };
+    return map[role] || role;
+  }
+</script>
+{% endblock %}
