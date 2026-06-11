@@ -22,8 +22,10 @@
         <li class="sidebar__divider agent-only hidden"><span>Agent</span></li>
         <li class="agent-only hidden"><a href="#my-properties" class="sidebar__link" data-tab="my-properties">Mes annonces</a></li>
         <li class="agent-only hidden"><a href="#add-property" class="sidebar__link" data-tab="add-property">Ajouter un bien</a></li>
+        <li class="agent-only hidden"><a href="#agent-transactions" class="sidebar__link" data-tab="agent-transactions">Demandes reçues</a></li>
         <li class="sidebar__divider admin-only hidden"><span>Admin</span></li>
         <li class="admin-only hidden"><a href="#users" class="sidebar__link" data-tab="users">Utilisateurs</a></li>
+        <li class="admin-only hidden"><a href="#reports" class="sidebar__link" data-tab="reports">Rapports & Stats</a></li>
       </ul>
     </nav>
   </aside>
@@ -50,16 +52,78 @@
       <div class="properties-grid" id="favorites-list" aria-live="polite"></div>
     </section>
 
-    <!-- Mes demandes -->
+    <!-- Mes demandes (client) -->
     <section id="tab-transactions" class="tab-panel hidden" aria-labelledby="transactions-title">
       <h1 id="transactions-title">Mes demandes</h1>
-      <p class="empty-state">Aucune demande en cours.</p>
+      <div id="transactions-list" aria-live="polite">
+        <p class="empty-state">Chargement…</p>
+      </div>
+    </section>
+
+    <!-- Demandes reçues (agent) -->
+    <section id="tab-agent-transactions" class="tab-panel hidden agent-only" aria-labelledby="agent-tx-title">
+      <h1 id="agent-tx-title">Demandes reçues</h1>
+      <div id="agent-transactions-list" aria-live="polite">
+        <p class="empty-state">Chargement…</p>
+      </div>
     </section>
 
     <!-- Mes annonces (agent) -->
     <section id="tab-my-properties" class="tab-panel hidden agent-only" aria-labelledby="my-props-title">
       <h1 id="my-props-title">Mes annonces</h1>
       <div class="properties-grid" id="my-properties-list" aria-live="polite"></div>
+    </section>
+
+    <!-- Utilisateurs (admin) -->
+    <section id="tab-users" class="tab-panel hidden admin-only" aria-labelledby="users-title">
+      <h1 id="users-title">Gestion des utilisateurs</h1>
+      <div id="users-list" aria-live="polite"><p class="empty-state">Cliquez sur l'onglet pour charger.</p></div>
+    </section>
+
+    <!-- Rapports & Statistiques (direction + IT) -->
+    <section id="tab-reports" class="tab-panel hidden admin-only" aria-labelledby="reports-title">
+      <h1 id="reports-title">Rapports & Statistiques</h1>
+
+      <!-- KPI globaux -->
+      <div class="stats-row" id="reports-kpi">
+        <div class="mini-stat"><span class="mini-stat__number" id="kpi-total">—</span><span>Biens en catalogue</span></div>
+        <div class="mini-stat"><span class="mini-stat__number" id="kpi-disponibles">—</span><span>Disponibles</span></div>
+        <div class="mini-stat"><span class="mini-stat__number" id="kpi-ca">—</span><span>CA finalisé (€)</span></div>
+        <div class="mini-stat"><span class="mini-stat__number" id="kpi-volume">—</span><span>Transactions finalisées</span></div>
+        <div class="mini-stat"><span class="mini-stat__number" id="kpi-pending">—</span><span>Demandes en attente</span></div>
+      </div>
+
+      <div class="reports-grid">
+        <!-- Ventes par agence -->
+        <div class="report-card">
+          <h2 class="report-card__title">CA par agence</h2>
+          <div id="report-agences" class="report-table-wrap"><p class="empty-state">Chargement…</p></div>
+        </div>
+
+        <!-- Prix m² par ville -->
+        <div class="report-card">
+          <h2 class="report-card__title">Prix moyen au m² par ville</h2>
+          <div id="report-prix-m2" class="report-table-wrap"><p class="empty-state">Chargement…</p></div>
+        </div>
+
+        <!-- Biens populaires -->
+        <div class="report-card report-card--full">
+          <h2 class="report-card__title">Biens les plus populaires</h2>
+          <div id="report-populaires" class="report-table-wrap"><p class="empty-state">Chargement…</p></div>
+        </div>
+
+        <!-- Évolution mensuelle -->
+        <div class="report-card report-card--full">
+          <h2 class="report-card__title">Évolution mensuelle des ventes</h2>
+          <div id="report-mensuel" class="report-table-wrap"><p class="empty-state">Chargement…</p></div>
+        </div>
+
+        <!-- Délai de vente -->
+        <div class="report-card">
+          <h2 class="report-card__title">Délai moyen de vente par ville</h2>
+          <div id="report-delai" class="report-table-wrap"><p class="empty-state">Chargement…</p></div>
+        </div>
+      </div>
     </section>
 
     <!-- Ajouter un bien (agent) -->
@@ -124,6 +188,12 @@
             <label for="p-desc" class="form-label">Description</label>
             <textarea id="p-desc" name="description" class="textarea" rows="5" placeholder="Décrivez le bien…"></textarea>
           </div>
+          <div class="form-group form-group--full">
+            <label for="p-images" class="form-label">Photos du bien</label>
+            <input id="p-images" type="file" class="input input--file" multiple accept="image/jpeg,image/png,image/webp" />
+            <p class="form-hint">Formats acceptés : JPEG, PNG, WebP — 5 Mo max par photo</p>
+            <div id="image-preview" class="image-preview-grid" aria-live="polite"></div>
+          </div>
         </div>
 
         <div id="form-alert" class="alert hidden" role="alert"></div>
@@ -175,6 +245,10 @@
 
       if (tab === 'favorites') loadFavorites();
       if (tab === 'my-properties') loadMyProperties();
+      if (tab === 'transactions') loadMyTransactions();
+      if (tab === 'agent-transactions') loadAgentTransactions();
+      if (tab === 'users') loadUsers();
+      if (tab === 'reports') loadReports();
     });
   });
 
@@ -193,36 +267,204 @@
       : '<p class="empty-state">Vous n\'avez aucun favori pour le moment.</p>';
   }
 
-  // Ajout d'un bien
+  // Chargement des annonces de l'agent
+  async function loadMyProperties() {
+    const container = document.getElementById('my-properties-list');
+    container.innerHTML = '<p>Chargement…</p>';
+    const res = await fetch('/api/v1/properties/me', {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    if (!res.ok) { container.innerHTML = '<p class="empty-state">Impossible de charger vos annonces.</p>'; return; }
+    const items = await res.json();
+    container.innerHTML = items.length
+      ? items.map(renderAgentCard).join('')
+      : '<p class="empty-state">Vous n\'avez aucune annonce publiée.</p>';
+  }
+
+  // Chargement des utilisateurs (admin)
+  async function loadUsers() {
+    const container = document.getElementById('users-list');
+    if (!container) return;
+    container.innerHTML = '<p>Chargement…</p>';
+    const res = await fetch('/api/v1/users/', {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    if (!res.ok) { container.innerHTML = '<p class="empty-state">Accès refusé.</p>'; return; }
+    const users = await res.json();
+    container.innerHTML = users.length ? renderUsersTable(users) : '<p class="empty-state">Aucun utilisateur.</p>';
+  }
+
+  function renderUsersTable(users) {
+    const roleOptions = ['client','commercial','direction','communication_marketing','administratif_rh','it_support'];
+    return `<div class="table-wrapper"><table class="data-table">
+      <thead><tr><th>Nom</th><th>Email</th><th>Rôle</th><th>Statut</th><th>Action</th></tr></thead>
+      <tbody>${users.map(u => `
+        <tr>
+          <td>${u.first_name} ${u.last_name}</td>
+          <td>${u.email}</td>
+          <td>
+            <select class="select select--sm" onchange="setUserRole('${u.id}', this.value)">
+              ${roleOptions.map(r => `<option value="${r}" ${r === u.role ? 'selected' : ''}>${formatRole(r)}</option>`).join('')}
+            </select>
+          </td>
+          <td><span class="status-badge ${u.is_active ? 'status-badge--active' : 'status-badge--inactive'}">${u.is_active ? 'Actif' : 'Inactif'}</span></td>
+          <td><a href="/annonces?agent=${u.id}" class="btn btn--ghost btn--sm">Voir annonces</a></td>
+        </tr>`).join('')}
+      </tbody>
+    </table></div>`;
+  }
+
+  // Demandes du client
+  async function loadMyTransactions() {
+    const container = document.getElementById('transactions-list');
+    container.innerHTML = '<p>Chargement…</p>';
+    const res = await fetch('/api/v1/transactions/me', {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    if (!res.ok) { container.innerHTML = '<p class="empty-state">Impossible de charger vos demandes.</p>'; return; }
+    const items = await res.json();
+    document.getElementById('stat-requests').textContent = items.length;
+    container.innerHTML = items.length
+      ? items.map(renderTransactionRow).join('')
+      : '<p class="empty-state">Vous n\'avez aucune demande en cours.</p>';
+  }
+
+  // Demandes reçues (agent)
+  async function loadAgentTransactions() {
+    const container = document.getElementById('agent-transactions-list');
+    container.innerHTML = '<p>Chargement…</p>';
+    const res = await fetch('/api/v1/transactions/agent', {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    if (!res.ok) { container.innerHTML = '<p class="empty-state">Impossible de charger les demandes.</p>'; return; }
+    const items = await res.json();
+    container.innerHTML = items.length
+      ? `<div class="table-wrapper"><table class="data-table">
+          <thead><tr><th>Bien</th><th>Offre</th><th>Statut</th><th>Date</th><th>Action</th></tr></thead>
+          <tbody>${items.map(t => `
+            <tr>
+              <td><a href="/annonces/${t.property_id}" class="link">${t.property_id.substring(0,8)}</a></td>
+              <td>${parseInt(t.offered_price).toLocaleString('fr-FR')} €</td>
+              <td><span class="tx-badge tx-badge--${t.status}">${formatTxStatus(t.status)}</span></td>
+              <td>${new Date(t.created_at).toLocaleDateString('fr-FR')}</td>
+              <td>
+                ${t.status === 'pending' ? `
+                  <button class="btn btn--sm btn--primary" onclick="updateTx('${t.id}','accepted')">Accepter</button>
+                  <button class="btn btn--sm btn--ghost" onclick="updateTx('${t.id}','rejected')" style="margin-left:4px">Refuser</button>
+                ` : '—'}
+              </td>
+            </tr>`).join('')}
+          </tbody>
+        </table></div>`
+      : '<p class="empty-state">Aucune demande reçue.</p>';
+  }
+
+  async function updateTx(txId, newStatus) {
+    const res = await fetch(`/api/v1/transactions/${txId}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+      body: JSON.stringify({ status: newStatus }),
+    });
+    if (res.ok) loadAgentTransactions();
+    else alert('Impossible de mettre à jour la demande.');
+  }
+
+  function renderTransactionRow(t) {
+    return `<div class="tx-card">
+      <div class="tx-card__main">
+        <a href="/annonces/${t.property_id}" class="tx-card__link">Voir le bien →</a>
+        <p class="tx-card__price">Offre : <strong>${parseInt(t.offered_price).toLocaleString('fr-FR')} €</strong></p>
+        ${t.notes ? `<p class="tx-card__notes">${t.notes}</p>` : ''}
+      </div>
+      <div class="tx-card__meta">
+        <span class="tx-badge tx-badge--${t.status}">${formatTxStatus(t.status)}</span>
+        <p class="tx-card__date">${new Date(t.created_at).toLocaleDateString('fr-FR')}</p>
+      </div>
+    </div>`;
+  }
+
+  function formatTxStatus(s) {
+    return { pending:'En attente', accepted:'Acceptée', rejected:'Refusée', completed:'Finalisée', cancelled:'Annulée' }[s] || s;
+  }
+
+  async function setUserRole(userId, role) {
+    const res = await fetch(`/api/v1/users/${userId}/role?role=${role}`, {
+      method: 'PATCH',
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    if (!res.ok) alert('Impossible de modifier le rôle.');
+  }
+
+  // Prévisualisation des images sélectionnées
+  document.getElementById('p-images').addEventListener('change', (e) => {
+    const preview = document.getElementById('image-preview');
+    preview.innerHTML = '';
+    Array.from(e.target.files).forEach(file => {
+      const reader = new FileReader();
+      reader.onload = ev => {
+        const img = document.createElement('img');
+        img.src = ev.target.result;
+        img.className = 'image-preview-thumb';
+        img.alt = file.name;
+        preview.appendChild(img);
+      };
+      reader.readAsDataURL(file);
+    });
+  });
+
+  // Ajout d'un bien (étape 1 : JSON, étape 2 : images)
   document.getElementById('add-property-form').addEventListener('submit', async (e) => {
     e.preventDefault();
     const form = e.target;
     const btn = form.querySelector('button[type=submit]');
-    const alert = document.getElementById('form-alert');
+    const alertEl = document.getElementById('form-alert');
     btn.disabled = true;
-    alert.className = 'alert hidden';
+    alertEl.className = 'alert hidden';
 
     const payload = {};
     new FormData(form).forEach((v, k) => {
-      if (v) payload[k] = ['price','surface','rooms','bedrooms','bathrooms'].includes(k) ? Number(v) : v;
+      if (v && k !== 'images') payload[k] = ['price','surface','rooms','bedrooms','bathrooms'].includes(k) ? Number(v) : v;
     });
 
+    // Étape 1 — Créer le bien
     const res = await fetch('/api/v1/properties/', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
       body: JSON.stringify(payload),
     });
 
-    btn.disabled = false;
     const data = await res.json();
     if (!res.ok) {
-      alert.textContent = data.detail || 'Erreur lors de la publication.';
-      alert.className = 'alert alert--error';
+      btn.disabled = false;
+      alertEl.textContent = data.detail || 'Erreur lors de la publication.';
+      alertEl.className = 'alert alert--error';
       return;
     }
-    alert.textContent = 'Annonce publiée avec succès !';
-    alert.className = 'alert alert--success';
+
+    // Étape 2 — Uploader les images si sélectionnées
+    const files = document.getElementById('p-images').files;
+    if (files.length > 0) {
+      const fd = new FormData();
+      Array.from(files).forEach(f => fd.append('files', f));
+      const imgRes = await fetch(`/api/v1/properties/${data.id}/images`, {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${token}` },
+        body: fd,
+      });
+      if (!imgRes.ok) {
+        btn.disabled = false;
+        alertEl.textContent = 'Annonce créée mais erreur lors de l\'upload des images.';
+        alertEl.className = 'alert alert--warning';
+        return;
+      }
+    }
+
+    btn.disabled = false;
+    alertEl.textContent = 'Annonce publiée avec succès !';
+    alertEl.className = 'alert alert--success';
     form.reset();
+    document.getElementById('image-preview').innerHTML = '';
+    setTimeout(() => loadMyProperties(), 500);
   });
 
   function renderMiniCard(p) {
@@ -236,6 +478,110 @@
         </div>
       </a>
     </article>`;
+  }
+
+  function renderAgentCard(p) {
+    const price = parseInt(p.price).toLocaleString('fr-FR') + ' €';
+    const STATUS = { available: 'Disponible', under_offer: 'Offre en cours', sold: 'Vendu', rented: 'Loué' };
+    return `<article class="property-card">
+      <a href="/annonces/${p.id}" class="property-card__link">
+        <div class="property-card__body">
+          <h3 class="property-card__title">${p.title}</h3>
+          <p class="property-card__location">${p.city} (${p.zip_code})</p>
+          <p class="property-card__price">${price}</p>
+          <span class="badge badge--${p.status}" style="margin-top:8px;display:inline-block">${STATUS[p.status] || p.status}</span>
+        </div>
+      </a>
+    </article>`;
+  }
+
+  // ---------------------------------------------------------------------------
+  // Rapports & Statistiques
+  // ---------------------------------------------------------------------------
+  async function loadReports() {
+    const headers = { Authorization: `Bearer ${token}` };
+
+    // KPI catalogue
+    const catRes = await fetch('/api/v1/reports/catalogue', { headers });
+    if (catRes.ok) {
+      const cat = await catRes.json();
+      document.getElementById('kpi-total').textContent = cat.total_biens ?? '—';
+      document.getElementById('kpi-disponibles').textContent = cat.disponibles ?? '—';
+      document.getElementById('kpi-pending').textContent = cat.transactions_en_attente ?? '—';
+    }
+
+    // Ventes (CA + par agence + mensuel)
+    const ventesRes = await fetch('/api/v1/reports/ventes', { headers });
+    if (ventesRes.ok) {
+      const ventes = await ventesRes.json();
+      document.getElementById('kpi-ca').textContent = parseInt(ventes.ca_total).toLocaleString('fr-FR');
+      document.getElementById('kpi-volume').textContent = ventes.volume_transactions;
+
+      document.getElementById('report-agences').innerHTML = ventes.par_agence.length
+        ? renderReportTable(['Agence', 'CA (€)', 'Volume'], ventes.par_agence.map(r => [
+            r.label || 'N/A',
+            parseInt(r.ca).toLocaleString('fr-FR'),
+            r.volume,
+          ]))
+        : '<p class="empty-state">Aucune vente finalisée.</p>';
+
+      document.getElementById('report-mensuel').innerHTML = ventes.par_mois.length
+        ? renderReportTable(['Mois', 'CA (€)', 'Volume'], ventes.par_mois.map(r => [
+            r.label,
+            parseInt(r.ca).toLocaleString('fr-FR'),
+            r.volume,
+          ]))
+        : '<p class="empty-state">Aucune donnée mensuelle.</p>';
+    }
+
+    // Prix m² par ville
+    const m2Res = await fetch('/api/v1/reports/prix-m2', { headers });
+    if (m2Res.ok) {
+      const m2 = await m2Res.json();
+      document.getElementById('report-prix-m2').innerHTML = m2.length
+        ? renderReportTable(['Ville', 'Biens', 'Prix moyen', 'Prix m² moyen'], m2.map(r => [
+            r.ville,
+            r.nb_biens,
+            parseInt(r.prix_moyen).toLocaleString('fr-FR') + ' €',
+            parseInt(r.prix_m2_moyen).toLocaleString('fr-FR') + ' €/m²',
+          ]))
+        : '<p class="empty-state">Pas assez de données.</p>';
+    }
+
+    // Biens populaires
+    const popRes = await fetch('/api/v1/reports/populaires?limit=10', { headers });
+    if (popRes.ok) {
+      const pop = await popRes.json();
+      document.getElementById('report-populaires').innerHTML = pop.length
+        ? renderReportTable(['Bien', 'Ville', 'Prix', 'Favoris', 'Demandes'], pop.map(r => [
+            `<a href="/annonces/${r.id}" class="link">${r.title}</a>`,
+            r.city,
+            parseInt(r.price).toLocaleString('fr-FR') + ' €',
+            r.nb_favoris,
+            r.nb_demandes,
+          ]))
+        : '<p class="empty-state">Aucun bien en catalogue.</p>';
+    }
+
+    // Délai de vente
+    const delaiRes = await fetch('/api/v1/reports/delai-vente', { headers });
+    if (delaiRes.ok) {
+      const delai = await delaiRes.json();
+      document.getElementById('report-delai').innerHTML = delai.length
+        ? renderReportTable(['Ville', 'Ventes', 'Délai moyen (jours)'], delai.map(r => [
+            r.ville,
+            r.nb_ventes,
+            r.delai_moyen_jours,
+          ]))
+        : '<p class="empty-state">Pas encore de ventes finalisées.</p>';
+    }
+  }
+
+  function renderReportTable(headers, rows) {
+    return `<div class="table-wrapper"><table class="data-table">
+      <thead><tr>${headers.map(h => `<th>${h}</th>`).join('')}</tr></thead>
+      <tbody>${rows.map(r => `<tr>${r.map(c => `<td>${c}</td>`).join('')}</tr>`).join('')}</tbody>
+    </table></div>`;
   }
 
   function formatRole(role) {

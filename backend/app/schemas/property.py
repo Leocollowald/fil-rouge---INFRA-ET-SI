@@ -53,6 +53,27 @@ class PropertyImageResponse(BaseModel):
     model_config = {"from_attributes": True}
 
 
+class AgencyInProperty(BaseModel):
+    id: uuid.UUID
+    name: str
+    city: str
+    address: str
+    phone: str | None
+    email: str | None
+
+    model_config = {"from_attributes": True}
+
+
+class AgentInProperty(BaseModel):
+    id: uuid.UUID
+    first_name: str
+    last_name: str
+    phone: str | None
+    email: str
+
+    model_config = {"from_attributes": True}
+
+
 class PropertyResponse(BaseModel):
     id: uuid.UUID
     title: str
@@ -72,6 +93,8 @@ class PropertyResponse(BaseModel):
     longitude: float | None
     agency_id: uuid.UUID | None
     agent_id: uuid.UUID | None
+    agency: AgencyInProperty | None = None
+    agent: AgentInProperty | None = None
     images: list[PropertyImageResponse] = []
     created_at: datetime
     updated_at: datetime

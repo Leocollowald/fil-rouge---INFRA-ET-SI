@@ -1,5 +1,9 @@
-from pydantic_settings import BaseSettings
 from functools import lru_cache
+from pathlib import Path
+
+from pydantic_settings import BaseSettings
+
+ENV_FILE = Path(__file__).resolve().parents[3] / ".env"
 
 
 class Settings(BaseSettings):
@@ -14,11 +18,13 @@ class Settings(BaseSettings):
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
     REFRESH_TOKEN_EXPIRE_DAYS: int = 7
 
-    SUPABASE_URL: str = ""
-    SUPABASE_SERVICE_KEY: str = ""
+    # Stockage images
+    UPLOAD_DIR: Path = Path(__file__).resolve().parents[3] / "uploads"
+    MAX_IMAGE_SIZE: int = 5 * 1024 * 1024  # 5 Mo
+    ALLOWED_IMAGE_TYPES: list[str] = ["image/jpeg", "image/png", "image/webp"]
 
     class Config:
-        env_file = ".env"
+        env_file = str(ENV_FILE)
 
 
 @lru_cache

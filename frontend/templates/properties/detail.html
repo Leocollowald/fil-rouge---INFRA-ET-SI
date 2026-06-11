@@ -1,0 +1,288 @@
+{% extends "base.html" %}
+{% block title %}Détail du bien — Y-Plaza{% endblock %}
+
+{% block content %}
+<div class="container property-detail" id="property-detail">
+  <div class="detail-skeleton" id="detail-skeleton" aria-label="Chargement…">
+    <div class="skeleton-gallery"></div>
+    <div class="skeleton-body">
+      <div class="skeleton-line skeleton-line--title"></div>
+      <div class="skeleton-line"></div>
+      <div class="skeleton-line skeleton-line--short"></div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  const propertyId = '{{ property_id }}';
+  const token = localStorage.getItem('yplaza_token');
+
+  const TYPE_LABELS = {
+    apartment: 'Appartement', house: 'Maison',
+    commercial: 'Local commercial', land: 'Terrain', office: 'Bureau',
+  };
+  const STATUS_LABELS = {
+    available: 'Disponible', under_offer: 'Offre en cours',
+    sold: 'Vendu', rented: 'Loué',
+  };
+
+  async function loadProperty() {
+    try {
+      const res = await fetch(`/api/v1/properties/${propertyId}`);
+      if (!res.ok) {
+        document.getElementById('property-detail').innerHTML =
+          '<p class="empty-state">Ce bien est introuvable ou a été supprimé.</p>';
+        return;
+      }
+      const p = await res.json();
+      renderDetail(p);
+    } catch {
+      document.getElementById('property-detail').innerHTML =
+        '<p class="empty-state">Impossible de charger ce bien. Réessayez.</p>';
+    }
+  }
+
+  function renderDetail(p) {
+    const txLabel = p.transaction_type === 'sale' ? 'Vente' : 'Location';
+    const price = parseInt(p.price).toLocaleString('fr-FR') + ' €' +
+      (p.transaction_type === 'rental' ? '<span class="price-unit">/mois</span>' : '');
+    const statusLabel = STATUS_LABELS[p.status] || p.status;
+    const typeLabel = TYPE_LABELS[p.property_type] || p.property_type;
+
+    const images = p.images && p.images.length
+      ? p.images
+      : [{ url: '/static/images/placeholder.svg', is_primary: true }];
+    const mainImg = images.find(i => i.is_primary) || images[0];
+
+    document.title = `${p.title} — Y-Plaza`;
+
+    document.getElementById('property-detail').innerHTML = `
+      <nav class="breadcrumb" aria-label="Fil d'Ariane">
+        <a href="/">Accueil</a>
+        <span aria-hidden="true">›</span>
+        <a href="/annonces">Annonces</a>
+        <span aria-hidden="true">›</span>
+        <span aria-current="page">${p.title}</span>
+      </nav>
+
+      <div class="detail-layout">
+
+        <!-- Colonne principale -->
+        <div class="detail-main">
+
+          <!-- Galerie -->
+          <div class="detail-gallery" id="gallery">
+            <div class="gallery-main">
+              <img src="${mainImg.url}" alt="${p.title}" class="gallery-main__img" id="main-img" />
+              <span class="badge badge--${p.transaction_type} badge--lg">${txLabel}</span>
+              <button class="btn-favorite detail-favorite" id="btn-favorite"
+                aria-label="Ajouter aux favoris" data-id="${p.id}" onclick="toggleFavorite(this)">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+                </svg>
+              </button>
+            </div>
+            ${images.length > 1 ? `
+            <div class="gallery-thumbs" role="list">
+              ${images.map((img, i) => `
+                <button class="gallery-thumb ${i === 0 ? 'gallery-thumb--active' : ''}"
+                  onclick="switchImage('${img.url}', this)"
+                  aria-label="Photo ${i + 1}"
+                  role="listitem">
+                  <img src="${img.url}" alt="Photo ${i + 1}" loading="lazy" />
+                </button>`).join('')}
+            </div>` : ''}
+          </div>
+
+          <!-- Titre et infos principales -->
+          <div class="detail-header">
+            <div class="detail-header__top">
+              <div>
+                <p class="detail-type">${typeLabel}</p>
+                <h1 class="detail-title">${p.title}</h1>
+                <p class="detail-location">
+                  <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
+                    <circle cx="12" cy="10" r="3"/>
+                  </svg>
+                  ${p.address}, ${p.zip_code} ${p.city}
+                </p>
+              </div>
+              <div class="detail-price-block">
+                <p class="detail-price">${price}</p>
+                <span class="detail-status detail-status--${p.status}">${statusLabel}</span>
+              </div>
+            </div>
+
+            <div class="detail-specs" aria-label="Caractéristiques">
+              ${p.surface ? `<div class="spec-item"><span class="spec-icon">📐</span><span class="spec-value">${p.surface} m²</span><span class="spec-label">Surface</span></div>` : ''}
+              ${p.rooms ? `<div class="spec-item"><span class="spec-icon">🏠</span><span class="spec-value">${p.rooms}</span><span class="spec-label">Pièce${p.rooms > 1 ? 's' : ''}</span></div>` : ''}
+              ${p.bedrooms ? `<div class="spec-item"><span class="spec-icon">🛏</span><span class="spec-value">${p.bedrooms}</span><span class="spec-label">Chambre${p.bedrooms > 1 ? 's' : ''}</span></div>` : ''}
+              ${p.bathrooms ? `<div class="spec-item"><span class="spec-icon">🚿</span><span class="spec-value">${p.bathrooms}</span><span class="spec-label">Salle${p.bathrooms > 1 ? 's' : ''} de bain</span></div>` : ''}
+            </div>
+          </div>
+
+          <!-- Description -->
+          ${p.description ? `
+          <div class="detail-section">
+            <h2>Description</h2>
+            <p class="detail-description">${p.description}</p>
+          </div>` : ''}
+
+        </div>
+
+        <!-- Colonne latérale -->
+        <aside class="detail-sidebar">
+
+          <!-- Carte contact agent -->
+          <div class="contact-card">
+            <h2 class="contact-card__title">
+              ${p.transaction_type === 'sale' ? 'Intéressé par ce bien ?' : 'Demander une visite'}
+            </h2>
+
+            ${p.agency ? `
+            <div class="agency-info">
+              <p class="agency-info__name">${p.agency.name}</p>
+              <p class="agency-info__location">
+                <svg aria-hidden="true" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
+                  <circle cx="12" cy="10" r="3"/>
+                </svg>
+                ${p.agency.city}
+              </p>
+              ${p.agency.phone ? `<p class="agency-info__phone">📞 ${p.agency.phone}</p>` : ''}
+              ${p.agency.email ? `<p class="agency-info__email">✉️ ${p.agency.email}</p>` : ''}
+            </div>` : ''}
+
+            ${p.agent ? `
+            <div class="agent-info">
+              <div class="agent-avatar" aria-hidden="true">${p.agent.first_name[0].toUpperCase()}</div>
+              <div>
+                <p class="agent-info__name">${p.agent.first_name} ${p.agent.last_name}</p>
+                <p class="agent-info__role">Agent immobilier</p>
+              </div>
+            </div>` : ''}
+
+            <div id="contact-alert" class="alert hidden" role="alert"></div>
+
+            <button class="btn btn--primary btn--full" id="btn-contact" onclick="openContactForm()">
+              ${p.transaction_type === 'sale' ? 'Faire une offre' : 'Demander une visite'}
+            </button>
+
+            <div id="contact-form" class="hidden">
+              <form id="transaction-form" class="contact-form">
+                ${p.transaction_type === 'sale' ? `
+                <div class="form-group">
+                  <label for="offered-price" class="form-label">Votre offre (€)</label>
+                  <input id="offered-price" name="offered_price" type="number"
+                    class="input" min="1" value="${Math.round(p.price)}" required />
+                </div>` : `
+                <input type="hidden" name="offered_price" value="${p.price}" />`}
+                <div class="form-group">
+                  <label for="notes" class="form-label">Message (facultatif)</label>
+                  <textarea id="notes" name="notes" class="textarea" rows="3"
+                    placeholder="Précisez votre demande…"></textarea>
+                </div>
+                <button type="submit" class="btn btn--primary btn--full" id="submit-contact">
+                  <span class="btn__text">Envoyer</span>
+                  <span class="btn__loader hidden"></span>
+                </button>
+              </form>
+            </div>
+          </div>
+
+          <!-- Ref et partage -->
+          <div class="detail-meta-card">
+            <p><strong>Référence :</strong> <code>${p.id.substring(0, 8).toUpperCase()}</code></p>
+            <p><strong>Mise en ligne :</strong> ${new Date(p.created_at).toLocaleDateString('fr-FR')}</p>
+          </div>
+
+        </aside>
+      </div>
+    `;
+
+    setupTransactionForm(p);
+  }
+
+  function switchImage(url, btn) {
+    document.getElementById('main-img').src = url;
+    document.querySelectorAll('.gallery-thumb').forEach(t => t.classList.remove('gallery-thumb--active'));
+    btn.classList.add('gallery-thumb--active');
+  }
+
+  function openContactForm() {
+    if (!token) {
+      window.location.href = '/connexion?next=' + encodeURIComponent(window.location.pathname);
+      return;
+    }
+    document.getElementById('btn-contact').classList.add('hidden');
+    document.getElementById('contact-form').classList.remove('hidden');
+  }
+
+  function setupTransactionForm(p) {
+    const form = document.getElementById('transaction-form');
+    if (!form) return;
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const btn = document.getElementById('submit-contact');
+      const alert = document.getElementById('contact-alert');
+      btn.disabled = true;
+      btn.querySelector('.btn__text').classList.add('hidden');
+      btn.querySelector('.btn__loader').classList.remove('hidden');
+
+      const data = Object.fromEntries(new FormData(form));
+      const payload = {
+        property_id: p.id,
+        offered_price: Number(data.offered_price),
+        notes: data.notes || null,
+      };
+
+      try {
+        const res = await fetch('/api/v1/transactions/', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+          body: JSON.stringify(payload),
+        });
+        const result = await res.json();
+        if (!res.ok) {
+          alert.textContent = result.detail || 'Erreur lors de l\'envoi.';
+          alert.className = 'alert alert--error';
+        } else {
+          alert.textContent = 'Votre demande a bien été envoyée. Un agent vous contactera prochainement.';
+          alert.className = 'alert alert--success';
+          form.classList.add('hidden');
+        }
+      } catch {
+        alert.textContent = 'Impossible de contacter le serveur.';
+        alert.className = 'alert alert--error';
+      } finally {
+        btn.disabled = false;
+        btn.querySelector('.btn__text').classList.remove('hidden');
+        btn.querySelector('.btn__loader').classList.add('hidden');
+      }
+    });
+  }
+
+  function toggleFavorite(btn) {
+    if (!token) {
+      window.location.href = '/connexion';
+      return;
+    }
+    const id = btn.dataset.id;
+    fetch(`/api/v1/properties/${id}/favorite`, {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${token}` },
+    })
+    .then(r => r.json())
+    .then(data => {
+      btn.classList.toggle('btn-favorite--active', data.is_favorite);
+      btn.setAttribute('aria-label', data.is_favorite ? 'Retirer des favoris' : 'Ajouter aux favoris');
+    });
+  }
+
+  loadProperty();
+</script>
+{% endblock %}

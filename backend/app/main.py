@@ -20,6 +20,10 @@ BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
 app.mount("/static", StaticFiles(directory=BASE_DIR / "frontend" / "static"), name="static")
 
+# Dossier uploads servi en dev — en prod c'est nginx qui gère /uploads/
+settings.UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
+app.mount("/uploads", StaticFiles(directory=settings.UPLOAD_DIR), name="uploads")
+
 templates = Jinja2Templates(directory=BASE_DIR / "frontend" / "templates")
 
 app.include_router(api_router)

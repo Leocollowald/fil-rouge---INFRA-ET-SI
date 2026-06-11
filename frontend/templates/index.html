@@ -101,7 +101,7 @@
     <div class="section__header">
       <h2 id="agencies-title">Nos agences</h2>
     </div>
-    <div class="agencies-grid" id="agencies-list">
+    <div class="agencies-grid" id="agencies-list" aria-live="polite">
       <!-- Chargé dynamiquement -->
     </div>
   </div>
@@ -127,6 +127,37 @@
     .catch(() => {
       document.getElementById('recent-properties').innerHTML =
         '<p class="empty-state">Impossible de charger les annonces.</p>';
+    });
+
+  // Chargement des agences
+  fetch('/api/v1/agencies/')
+    .then(r => r.json())
+    .then(agencies => {
+      const container = document.getElementById('agencies-list');
+      if (!agencies.length) {
+        container.innerHTML = '<p class="empty-state">Aucune agence disponible.</p>';
+        return;
+      }
+      container.innerHTML = agencies.map(a => `
+        <div class="agency-card">
+          <h3 class="agency-card__name">${a.name}</h3>
+          <p class="agency-card__city">
+            <svg aria-hidden="true" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
+              <circle cx="12" cy="10" r="3"/>
+            </svg>
+            ${a.city}
+          </p>
+          ${a.phone ? `<p class="agency-card__contact">📞 ${a.phone}</p>` : ''}
+          ${a.email ? `<p class="agency-card__contact">✉️ ${a.email}</p>` : ''}
+          <a href="/annonces?agency=${a.id}" class="btn btn--outline btn--sm" style="margin-top:12px">
+            Voir les biens
+          </a>
+        </div>`).join('');
+    })
+    .catch(() => {
+      document.getElementById('agencies-list').innerHTML =
+        '<p class="empty-state">Impossible de charger les agences.</p>';
     });
 
   function renderPropertyCard(p) {
