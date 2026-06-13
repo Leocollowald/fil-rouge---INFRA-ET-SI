@@ -1,108 +1,104 @@
 {% extends "base.html" %}
-
 {% block title %}Y-Plaza — Achat & Location immobilier{% endblock %}
 
 {% block content %}
 
 <!-- Hero -->
 <section class="hero" aria-label="Recherche de biens">
-  <div class="hero__bg"></div>
   <div class="container hero__inner">
-    <h1 class="hero__title">Trouvez le bien <br /><span class="highlight">qui vous correspond</span></h1>
-    <p class="hero__subtitle">12 agences en France pour vous accompagner dans vos projets immobiliers</p>
+    <p class="hero__eyebrow">VOTRE PARTENAIRE IMMOBILIER EN FRANCE</p>
+    <h1 class="hero__title">Trouvez le bien qui vous ressemble</h1>
+    <p class="hero__subtitle">12 agences. Des milliers de biens. Un accompagnement sur mesure.</p>
 
-    <form class="search-bar" action="/annonces" method="get" role="search" aria-label="Recherche rapide">
-      <div class="search-bar__field">
-        <label for="search-type" class="sr-only">Type de transaction</label>
-        <select id="search-type" name="transaction_type" class="select">
-          <option value="">Acheter ou louer</option>
-          <option value="sale">Acheter</option>
-          <option value="rental">Louer</option>
-        </select>
-      </div>
-      <div class="search-bar__field search-bar__field--grow">
-        <label for="search-city" class="sr-only">Ville</label>
-        <input id="search-city" name="city" type="text" class="input" placeholder="Ville, code postal…" autocomplete="off" />
-      </div>
-      <div class="search-bar__field">
-        <label for="search-ptype" class="sr-only">Type de bien</label>
-        <select id="search-ptype" name="property_type" class="select">
-          <option value="">Tous les biens</option>
-          <option value="apartment">Appartement</option>
-          <option value="house">Maison</option>
-          <option value="commercial">Local commercial</option>
-          <option value="land">Terrain</option>
-          <option value="office">Bureau</option>
-        </select>
-      </div>
+    <form class="hero__search" action="/annonces" method="get" role="search" aria-label="Recherche rapide">
+      <label for="search-type" class="sr-only">Type de transaction</label>
+      <select id="search-type" name="transaction_type" class="select">
+        <option value="">Acheter ou louer</option>
+        <option value="sale">Acheter</option>
+        <option value="rental">Louer</option>
+      </select>
+
+      <label for="search-city" class="sr-only">Ville</label>
+      <input id="search-city" name="city" type="text" class="input" placeholder="Ville, code postal…" autocomplete="off" />
+
+      <label for="search-ptype" class="sr-only">Type de bien</label>
+      <select id="search-ptype" name="property_type" class="select">
+        <option value="">Tous les biens</option>
+        <option value="apartment">Appartement</option>
+        <option value="house">Maison</option>
+        <option value="commercial">Local commercial</option>
+        <option value="land">Terrain</option>
+        <option value="office">Bureau</option>
+      </select>
+
       <button type="submit" class="btn btn--primary">Rechercher</button>
     </form>
   </div>
 </section>
 
-<!-- Stats -->
-<section class="stats" aria-label="Chiffres clés">
-  <div class="container stats__grid">
-    <div class="stat-card">
-      <span class="stat-card__number" id="stat-properties">—</span>
-      <span class="stat-card__label">Biens disponibles</span>
-    </div>
-    <div class="stat-card">
-      <span class="stat-card__number">12</span>
-      <span class="stat-card__label">Agences en France</span>
-    </div>
-    <div class="stat-card">
-      <span class="stat-card__number">+2 000</span>
-      <span class="stat-card__label">Transactions réalisées</span>
-    </div>
-    <div class="stat-card">
-      <span class="stat-card__number">98%</span>
-      <span class="stat-card__label">Clients satisfaits</span>
-    </div>
-  </div>
-</section>
 
-<!-- Annonces récentes -->
-<section class="section" aria-labelledby="recent-title">
+<!-- Dernières annonces -->
+<section class="section section--pearl" aria-labelledby="recent-title">
   <div class="container">
     <div class="section__header">
-      <h2 id="recent-title">Dernières annonces</h2>
-      <a href="/annonces" class="btn btn--outline">Voir tout</a>
+      <h2 class="section__title" id="recent-title">Dernières annonces</h2>
+      <p class="section__subtitle">Découvrez nos biens récemment mis en ligne</p>
     </div>
     <div class="properties-grid" id="recent-properties" aria-live="polite" aria-busy="true">
-      <!-- Skeletons de chargement -->
-      <div class="property-card property-card--skeleton" aria-hidden="true"></div>
-      <div class="property-card property-card--skeleton" aria-hidden="true"></div>
-      <div class="property-card property-card--skeleton" aria-hidden="true"></div>
-      <div class="property-card property-card--skeleton" aria-hidden="true"></div>
-      <div class="property-card property-card--skeleton" aria-hidden="true"></div>
-      <div class="property-card property-card--skeleton" aria-hidden="true"></div>
+      <!-- Skeletons -->
+      <div class="skeleton-card" aria-hidden="true">
+        <div class="skeleton skeleton-card__img"></div>
+        <div class="skeleton-card__body">
+          <div class="skeleton skeleton-card__line"></div>
+          <div class="skeleton skeleton-card__line skeleton-card__line--short"></div>
+        </div>
+        <div class="skeleton-card__footer"></div>
+      </div>
+      <div class="skeleton-card" aria-hidden="true">
+        <div class="skeleton skeleton-card__img"></div>
+        <div class="skeleton-card__body">
+          <div class="skeleton skeleton-card__line"></div>
+          <div class="skeleton skeleton-card__line skeleton-card__line--short"></div>
+        </div>
+        <div class="skeleton-card__footer"></div>
+      </div>
+      <div class="skeleton-card" aria-hidden="true">
+        <div class="skeleton skeleton-card__img"></div>
+        <div class="skeleton-card__body">
+          <div class="skeleton skeleton-card__line"></div>
+          <div class="skeleton skeleton-card__line skeleton-card__line--short"></div>
+        </div>
+        <div class="skeleton-card__footer"></div>
+      </div>
+    </div>
+    <div style="text-align:center; margin-top:40px">
+      <a href="/annonces" class="btn btn--outline btn--lg">Voir toutes les annonces</a>
     </div>
   </div>
 </section>
 
-<!-- Vendre / estimer -->
-<section class="cta-section" aria-labelledby="cta-title">
-  <div class="container cta-section__inner">
-    <div class="cta-section__text">
-      <h2 id="cta-title">Vous souhaitez vendre ou louer votre bien ?</h2>
-      <p>Nos agents vous accompagnent à chaque étape. Estimation gratuite et sans engagement.</p>
-    </div>
-    <div class="cta-section__actions">
-      <a href="/connexion" class="btn btn--white">Déposer une annonce</a>
-      <a href="#agences" class="btn btn--outline-white">Contacter une agence</a>
-    </div>
-  </div>
-</section>
-
-<!-- Agences -->
-<section class="section" id="agences" aria-labelledby="agencies-title">
+<!-- Section CTA -->
+<section class="section section--cta" aria-labelledby="cta-title">
   <div class="container">
     <div class="section__header">
-      <h2 id="agencies-title">Nos agences</h2>
+      <h2 class="section__title" id="cta-title">Vous souhaitez vendre ou louer ?</h2>
+      <p class="section__subtitle section__subtitle--white">Nos agents vous accompagnent à chaque étape. Estimation gratuite et sans engagement.</p>
+    </div>
+    <div style="display:flex; gap:16px; justify-content:center; flex-wrap:wrap">
+      <a href="/connexion" class="btn btn--primary btn--lg">Déposer une annonce</a>
+      <a href="#agences" class="btn btn--outline btn--lg" style="border-color:rgba(255,255,255,.6); color:white">Contacter une agence</a>
+    </div>
+  </div>
+</section>
+
+<!-- Nos agences -->
+<section class="section section--white" id="agences" aria-labelledby="agencies-title">
+  <div class="container">
+    <div class="section__header">
+      <h2 class="section__title" id="agencies-title">Nos agences</h2>
+      <p class="section__subtitle">Présents dans toute la France pour vous accompagner</p>
     </div>
     <div class="agencies-grid" id="agencies-list" aria-live="polite">
-      <!-- Chargé dynamiquement -->
     </div>
   </div>
 </section>
@@ -111,75 +107,27 @@
 
 {% block scripts %}
 <script>
-  // Chargement des annonces récentes
-  fetch('/api/v1/properties/?per_page=6')
-    .then(r => r.json())
-    .then(data => {
-      const container = document.getElementById('recent-properties');
-      container.setAttribute('aria-busy', 'false');
-      if (!data.items.length) {
-        container.innerHTML = '<p class="empty-state">Aucune annonce disponible pour le moment.</p>';
-        return;
-      }
-      container.innerHTML = data.items.map(renderPropertyCard).join('');
-      document.getElementById('stat-properties').textContent = '+' + data.total;
-    })
-    .catch(() => {
-      document.getElementById('recent-properties').innerHTML =
-        '<p class="empty-state">Impossible de charger les annonces.</p>';
-    });
-
-  // Chargement des agences
-  fetch('/api/v1/agencies/')
-    .then(r => r.json())
-    .then(agencies => {
-      const container = document.getElementById('agencies-list');
-      if (!agencies.length) {
-        container.innerHTML = '<p class="empty-state">Aucune agence disponible.</p>';
-        return;
-      }
-      container.innerHTML = agencies.map(a => `
-        <div class="agency-card">
-          <h3 class="agency-card__name">${a.name}</h3>
-          <p class="agency-card__city">
-            <svg aria-hidden="true" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
-              <circle cx="12" cy="10" r="3"/>
-            </svg>
-            ${a.city}
-          </p>
-          ${a.phone ? `<p class="agency-card__contact">📞 ${a.phone}</p>` : ''}
-          ${a.email ? `<p class="agency-card__contact">✉️ ${a.email}</p>` : ''}
-          <a href="/annonces?agency=${a.id}" class="btn btn--outline btn--sm" style="margin-top:12px">
-            Voir les biens
-          </a>
-        </div>`).join('');
-    })
-    .catch(() => {
-      document.getElementById('agencies-list').innerHTML =
-        '<p class="empty-state">Impossible de charger les agences.</p>';
-    });
-
   function renderPropertyCard(p) {
-    const img = p.images.length
-      ? p.images.find(i => i.is_primary)?.url || p.images[0].url
+    const img = p.images && p.images.length
+      ? (p.images.find(i => i.is_primary)?.url || p.images[0].url)
       : '/static/images/placeholder.svg';
-    const price = parseInt(p.price).toLocaleString('fr-FR') + ' €';
-    const typeLabel = {'apartment':'Appartement','house':'Maison','commercial':'Local commercial','land':'Terrain','office':'Bureau'}[p.property_type] || p.property_type;
+    const price = parseInt(p.price).toLocaleString('fr-FR') + ' €' +
+      (p.transaction_type === 'rental' ? '/mois' : '');
     const txLabel = p.transaction_type === 'sale' ? 'Vente' : 'Location';
+    const typeLabel = {apartment:'Appartement',house:'Maison',commercial:'Local commercial',land:'Terrain',office:'Bureau'}[p.property_type] || p.property_type;
 
     return `
       <article class="property-card">
-        <a href="/annonces/${p.id}" class="property-card__link" aria-label="${p.title}">
-          <div class="property-card__img-wrapper">
+        <a href="/annonces/${p.id}">
+          <div class="property-card__media">
             <img src="${img}" alt="${p.title}" class="property-card__img" loading="lazy" />
-            <span class="badge badge--${p.transaction_type}">${txLabel}</span>
+            <span class="badge badge--${p.transaction_type} property-card__badge">${txLabel}</span>
           </div>
           <div class="property-card__body">
-            <p class="property-card__type">${typeLabel}</p>
+            <p class="property-card__location" style="font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:.06em;color:var(--c-stone);margin-bottom:4px">${typeLabel}</p>
             <h3 class="property-card__title">${p.title}</h3>
             <p class="property-card__location">
-              <svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+              <svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
               ${p.city}
             </p>
             <div class="property-card__meta">
@@ -187,13 +135,54 @@
               ${p.rooms ? `<span>${p.rooms} pièce${p.rooms > 1 ? 's' : ''}</span>` : ''}
               ${p.bedrooms ? `<span>${p.bedrooms} ch.</span>` : ''}
             </div>
-            <p class="property-card__price">${price}${p.transaction_type === 'rental' ? '/mois' : ''}</p>
           </div>
         </a>
-        <button class="btn-favorite" aria-label="Ajouter aux favoris" data-id="${p.id}" onclick="toggleFavorite(this)">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
-        </button>
+        <div class="property-card__footer">
+          <span class="property-card__price">${price}</span>
+          <button class="btn-favorite" aria-label="Ajouter aux favoris" data-id="${p.id}" onclick="toggleFavorite(this)">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+          </button>
+        </div>
       </article>`;
   }
+
+  fetch('/api/v1/properties/?per_page=6')
+    .then(r => r.json())
+    .then(data => {
+      const container = document.getElementById('recent-properties');
+      container.setAttribute('aria-busy', 'false');
+      if (!data.items || !data.items.length) {
+        container.innerHTML = '<p style="color:var(--c-stone);grid-column:1/-1;text-align:center">Aucune annonce disponible.</p>';
+        return;
+      }
+      container.innerHTML = data.items.map(renderPropertyCard).join('');
+      // Déclencher l'animation après insertion
+      requestAnimationFrame(() => {
+        container.querySelectorAll('.property-card').forEach(el => {
+          el.classList.add('visible');
+        });
+      });
+    })
+    .catch(() => {
+      document.getElementById('recent-properties').innerHTML =
+        '<p style="color:var(--c-stone);grid-column:1/-1;text-align:center">Impossible de charger les annonces.</p>';
+    });
+
+  fetch('/api/v1/agencies/')
+    .then(r => r.json())
+    .then(agencies => {
+      const container = document.getElementById('agencies-list');
+      if (!agencies.length) {
+        container.innerHTML = '<p style="color:var(--c-stone)">Aucune agence disponible.</p>';
+        return;
+      }
+      container.innerHTML = agencies.map(a => `
+        <div class="agency-card visible">
+          <p class="agency-card__name">${a.name}</p>
+          <p class="agency-card__info">${a.city}${a.phone ? ' · ' + a.phone : ''}${a.email ? '<br>' + a.email : ''}</p>
+          <a href="/annonces?agency=${a.id}" class="btn btn--outline btn--sm" style="margin-top:14px">Voir les biens</a>
+        </div>`).join('');
+    })
+    .catch(() => {});
 </script>
 {% endblock %}

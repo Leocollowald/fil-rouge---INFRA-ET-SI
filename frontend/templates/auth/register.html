@@ -2,66 +2,83 @@
 {% block title %}Inscription — Y-Plaza{% endblock %}
 
 {% block content %}
-<section class="auth-section">
-  <div class="auth-card">
-    <div class="auth-card__header">
-      <a href="/" class="logo-text"><span class="logo-y">Y</span>-Plaza</a>
-      <h1>Créer un compte</h1>
-      <p>Rejoignez Y-Plaza et gérez vos projets immobiliers</p>
+<div class="auth-split">
+
+  <!-- Panneau gauche -->
+  <div class="auth-split__left">
+    <div>
+      <a href="/" class="navbar__logo auth-split__left-logo">
+        <span class="logo-y">Y</span><span class="logo-plaza" style="color:white">Plaza</span>
+      </a>
     </div>
-
-    <div id="alert" class="alert hidden" role="alert" aria-live="assertive"></div>
-
-    <form id="register-form" class="auth-form" novalidate>
-      <div class="form-row">
-        <div class="form-group">
-          <label for="first_name" class="form-label">Prénom</label>
-          <input id="first_name" name="first_name" type="text" class="input" placeholder="Jean" autocomplete="given-name" required />
-        </div>
-        <div class="form-group">
-          <label for="last_name" class="form-label">Nom</label>
-          <input id="last_name" name="last_name" type="text" class="input" placeholder="Dupont" autocomplete="family-name" required />
-        </div>
-      </div>
-
-      <div class="form-group">
-        <label for="email" class="form-label">Adresse email</label>
-        <input id="email" name="email" type="email" class="input" placeholder="vous@exemple.fr" autocomplete="email" required />
-        <span class="field-error" id="email-error" aria-live="polite"></span>
-      </div>
-
-      <div class="form-group">
-        <label for="phone" class="form-label">Téléphone <span class="form-label__optional">(facultatif)</span></label>
-        <input id="phone" name="phone" type="tel" class="input" placeholder="06 00 00 00 00" autocomplete="tel" />
-      </div>
-
-      <div class="form-group">
-        <label for="password" class="form-label">Mot de passe</label>
-        <div class="input-wrapper">
-          <input id="password" name="password" type="password" class="input" placeholder="Minimum 8 caractères" autocomplete="new-password" required />
-          <button type="button" class="btn-show-password" aria-label="Afficher le mot de passe" onclick="togglePassword(this)">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-          </button>
-        </div>
-        <div class="password-strength" id="password-strength" aria-live="polite"></div>
-        <span class="field-error" id="password-error" aria-live="polite"></span>
-      </div>
-
-      <button type="submit" class="btn btn--primary btn--full" id="submit-btn">
-        <span class="btn__text">Créer mon compte</span>
-        <span class="btn__loader hidden" aria-hidden="true"></span>
-      </button>
-
-      <p class="auth-form__legal">
-        En créant un compte, vous acceptez nos <a href="#">CGU</a> et notre <a href="#">politique de confidentialité</a>.
-      </p>
-    </form>
-
-    <p class="auth-card__footer">
-      Déjà un compte ? <a href="/connexion">Se connecter</a>
-    </p>
+    <p class="auth-split__tagline">"Votre projet immobilier commence ici."</p>
+    <ul class="auth-split__bullets">
+      <li class="auth-split__bullet">Accédez à toutes les annonces</li>
+      <li class="auth-split__bullet">Gérez vos favoris et demandes</li>
+      <li class="auth-split__bullet">Échangez directement avec nos agents</li>
+    </ul>
   </div>
-</section>
+
+  <!-- Panneau droit -->
+  <div class="auth-split__right">
+    <div class="auth-card">
+      <h1 class="auth-card__title">Créer un compte</h1>
+      <p class="auth-card__subtitle">Rejoignez Y-Plaza et gérez vos projets immobiliers</p>
+
+      <div id="alert" class="alert hidden" role="alert" aria-live="assertive"></div>
+
+      <form id="register-form" class="auth-form" novalidate>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+          <div class="form-group">
+            <label for="first_name">Prénom</label>
+            <input id="first_name" name="first_name" type="text" class="input" placeholder="Jean" autocomplete="given-name" required />
+          </div>
+          <div class="form-group">
+            <label for="last_name">Nom</label>
+            <input id="last_name" name="last_name" type="text" class="input" placeholder="Dupont" autocomplete="family-name" required />
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="email">Adresse email</label>
+          <input id="email" name="email" type="email" class="input" placeholder="vous@exemple.fr" autocomplete="email" required />
+          <span class="field-error" id="email-error" aria-live="polite"></span>
+        </div>
+
+        <div class="form-group">
+          <label for="phone">Téléphone <span style="font-size:10px;text-transform:none;letter-spacing:0;opacity:.7">(facultatif)</span></label>
+          <input id="phone" name="phone" type="tel" class="input" placeholder="06 00 00 00 00" autocomplete="tel" />
+        </div>
+
+        <div class="form-group">
+          <label for="password">Mot de passe</label>
+          <div style="position:relative">
+            <input id="password" name="password" type="password" class="input"
+              placeholder="Minimum 8 caractères" autocomplete="new-password"
+              required style="padding-right:44px" />
+            <button type="button" style="position:absolute;right:12px;top:50%;transform:translateY(-50%);color:var(--c-stone);background:none;border:none;cursor:pointer;padding:4px" aria-label="Afficher le mot de passe" onclick="togglePassword(this)">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+            </button>
+          </div>
+          <div id="password-strength" aria-live="polite" style="margin-top:6px"></div>
+          <span class="field-error" id="password-error" aria-live="polite"></span>
+        </div>
+
+        <button type="submit" class="btn btn--primary" id="submit-btn">
+          <span class="btn__text">Créer mon compte</span>
+          <span class="btn__loader hidden" aria-hidden="true"></span>
+        </button>
+
+        <p style="font-size:12px;color:var(--c-stone);text-align:center">
+          En créant un compte, vous acceptez nos <a href="#" style="color:var(--c-sage)">CGU</a> et notre <a href="#" style="color:var(--c-sage)">politique de confidentialité</a>.
+        </p>
+      </form>
+
+      <p class="auth-form__footer">Déjà un compte ? <a href="/connexion">Se connecter</a></p>
+    </div>
+  </div>
+
+</div>
 {% endblock %}
 
 {% block scripts %}
@@ -79,8 +96,13 @@
     if (/[0-9]/.test(password)) score++;
     if (/[^A-Za-z0-9]/.test(password)) score++;
     const labels = ['Très faible', 'Faible', 'Moyen', 'Fort', 'Très fort'];
-    const classes = ['very-weak', 'weak', 'medium', 'strong', 'very-strong'];
-    el.innerHTML = `<div class="strength-bar strength-bar--${classes[score - 1] || 'very-weak'}" style="width:${score * 20}%"></div><span>${labels[score - 1] || 'Très faible'}</span>`;
+    const colors = ['#B91C1C', '#D97706', '#CA8A04', '#16A34A', '#166534'];
+    const pct = score * 20;
+    el.innerHTML = `
+      <div style="background:var(--c-border);border-radius:2px;height:3px;overflow:hidden;margin-bottom:4px">
+        <div style="height:100%;width:${pct}%;background:${colors[score-1]||colors[0]};transition:width 200ms ease-out,background 200ms ease-out"></div>
+      </div>
+      <span style="font-size:11px;color:${colors[score-1]||colors[0]};font-weight:500">${labels[score-1]||'Très faible'}</span>`;
   }
 
   document.getElementById('register-form').addEventListener('submit', async (e) => {
@@ -111,11 +133,10 @@
       if (!res.ok) {
         if (res.status === 409) showFieldError('email-error', data.detail);
         else if (res.status === 422) handleValidationErrors(data.detail);
-        else showAlert(data.detail || 'Erreur lors de l\'inscription', 'error');
+        else showAlert(data.detail || "Erreur lors de l'inscription", 'error');
         return;
       }
 
-      // Connexion automatique après inscription
       const loginRes = await fetch('/api/v1/auth/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },

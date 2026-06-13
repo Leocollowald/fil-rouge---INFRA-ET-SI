@@ -26,6 +26,27 @@ document.getElementById('btn-logout')?.addEventListener('click', async () => {
   window.location.href = '/';
 });
 
+// Navbar transparente sur hero (page d'accueil uniquement)
+if (document.querySelector('.hero')) {
+  const navbar = document.querySelector('.navbar');
+  navbar.classList.add('navbar--hero');
+  const onScroll = () => {
+    navbar.classList.toggle('navbar--scrolled', window.scrollY > 60);
+  };
+  window.addEventListener('scroll', onScroll, { passive: true });
+  onScroll();
+}
+
+// Apparition des éléments au scroll
+const observer = new IntersectionObserver(
+  (entries) => entries.forEach(e => {
+    if (e.isIntersecting) { e.target.classList.add('visible'); observer.unobserve(e.target); }
+  }),
+  { threshold: 0.1, rootMargin: '0px 0px -40px 0px' }
+);
+document.querySelectorAll('.property-card, .service-card, .agency-card')
+  .forEach(el => observer.observe(el));
+
 // Toggle favori (global, utilisé dans plusieurs pages)
 async function toggleFavorite(btn) {
   const token = localStorage.getItem('yplaza_token');

@@ -3,6 +3,7 @@ Module d'analyse de données — Y-Plaza
 Utilise pandas pour le nettoyage/agrégation et SQLAlchemy text() pour les requêtes SQL brutes.
 """
 
+import numpy as np
 import pandas as pd
 from sqlalchemy import text
 from sqlalchemy.orm import Session
@@ -262,3 +263,86 @@ def delai_vente_par_ville(db: Session) -> list[dict]:
         return []
     df = df.dropna(subset=["delai_moyen_jours"])
     return df.to_dict("records")
+
+
+# ---------------------------------------------------------------------------
+# 6. Prédiction du prix au m² à 3 et 6 mois par ville (numpy.polyfit)
+# ---------------------------------------------------------------------------
+
+def prediction_prix(db: Session) -> list[dict]:
+    """
+    Régression linéaire (numpy.polyfit deg=1) sur le prix au m² mensuel par ville.
+    Prédit la tendance à 3 et 6 mois à partir du dernier point connu.
+
+    Fiabilité :
+      - "insuffisant" : 1 seul point (impossible de tracer une droite)
+      - "modérée"     : 2-3 points
+      - "élevée"      : 4 points et plus
+    """
+    sql = """
+        SELECT
+            p.city                                                      AS ville,
+            DATE_TRUNC('month', p.created_at)::date                    AS mois,
+            ROUND(AVG(p.price / NULLIF(p.surface, 0))::numeric, 0)    AS prix_m2
+        FROM properties p
+        WHERE p.surface IS NOT NULL
+          AND p.surface > 0
+        GROUP BY p.city, DATE_TRUNC('month', p.created_at)
+        ORDER BY p.city, mois
+    """
+    df = _query_to_df(db, sql)
+    if df.empty:
+        return []
+
+    df = df.dropna(subset=["prix_m2"])
+    df["prix_m2"] = pd.to_numeric(df["prix_m2"], errors="coerce")
+
+    results = []
+    for ville, grp in df.groupby("ville"):
+        grp = grp.reset_index(drop=True)
+        y = grp["prix_m2"].astype(float).values
+        prix_actuel = round(float(y[-1]), 0)
+        n = len(y)
+
+        if n < 2:
+            # Un seul point : pas de régression possible, on retourne la valeur actuelle
+            results.append({
+                "ville": ville,
+                "prix_m2_actuel": prix_actuel,
+                "tendance": "stable",
+                "variation_mensuelle": 0.0,
+                "prediction_3m": prix_actuel,
+                "prediction_6m": prix_actuel,
+                "nb_points": n,
+                "fiabilite": "insuffisant",
+            })
+            continue
+
+        x = np.arange(n, dtype=float)
+        coef = np.polyfit(x, y, 1)   # coef[0]=pente €/m²/mois, coef[1]=intercept
+        slope = float(coef[0])
+
+        # Extrapolation : dernier indice connu = x[-1]
+        pred_3m = round(max(float(np.polyval(coef, x[-1] + 3)), 0), 0)
+        pred_6m = round(max(float(np.polyval(coef, x[-1] + 6)), 0), 0)
+
+        if abs(slope) < 50:
+            tendance = "stable"
+        elif slope > 0:
+            tendance = "hausse"
+        else:
+            tendance = "baisse"
+
+        results.append({
+            "ville": ville,
+            "prix_m2_actuel": prix_actuel,
+            "tendance": tendance,
+            "variation_mensuelle": round(slope, 0),
+            "prediction_3m": pred_3m,
+            "prediction_6m": pred_6m,
+            "nb_points": n,
+            "fiabilite": "élevée" if n >= 4 else "modérée",
+        })
+
+    # Trier par prédiction 6 mois décroissante (zones les plus chères en tête)
+    return sorted(results, key=lambda r: r["prediction_6m"], reverse=True)

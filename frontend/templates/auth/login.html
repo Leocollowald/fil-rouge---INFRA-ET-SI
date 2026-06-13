@@ -2,53 +2,64 @@
 {% block title %}Connexion — Y-Plaza{% endblock %}
 
 {% block content %}
-<section class="auth-section">
-  <div class="auth-card">
-    <div class="auth-card__header">
-      <a href="/" class="logo-text"><span class="logo-y">Y</span>-Plaza</a>
-      <h1>Connexion</h1>
-      <p>Accédez à votre espace personnel</p>
+<div class="auth-split">
+
+  <!-- Panneau gauche -->
+  <div class="auth-split__left">
+    <div>
+      <a href="/" class="navbar__logo auth-split__left-logo">
+        <span class="logo-y">Y</span><span class="logo-plaza" style="color:white">Plaza</span>
+      </a>
     </div>
-
-    <div id="alert" class="alert hidden" role="alert" aria-live="assertive"></div>
-
-    <form id="login-form" class="auth-form" novalidate>
-      <div class="form-group">
-        <label for="email" class="form-label">Adresse email</label>
-        <input
-          id="email" name="email" type="email" class="input"
-          placeholder="vous@exemple.fr" autocomplete="email"
-          required aria-required="true"
-        />
-        <span class="field-error" id="email-error" aria-live="polite"></span>
-      </div>
-
-      <div class="form-group">
-        <label for="password" class="form-label">Mot de passe</label>
-        <div class="input-wrapper">
-          <input
-            id="password" name="password" type="password" class="input"
-            placeholder="••••••••" autocomplete="current-password"
-            required aria-required="true"
-          />
-          <button type="button" class="btn-show-password" aria-label="Afficher le mot de passe" onclick="togglePassword(this)">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-          </button>
-        </div>
-        <span class="field-error" id="password-error" aria-live="polite"></span>
-      </div>
-
-      <button type="submit" class="btn btn--primary btn--full" id="submit-btn">
-        <span class="btn__text">Se connecter</span>
-        <span class="btn__loader hidden" aria-hidden="true"></span>
-      </button>
-    </form>
-
-    <p class="auth-card__footer">
-      Pas encore de compte ? <a href="/inscription">Créer un compte</a>
-    </p>
+    <p class="auth-split__tagline">"L'immobilier, c'est avant tout une histoire de confiance."</p>
+    <ul class="auth-split__bullets">
+      <li class="auth-split__bullet">12 agences partout en France</li>
+      <li class="auth-split__bullet">Des milliers de biens disponibles</li>
+      <li class="auth-split__bullet">Un accompagnement personnalisé</li>
+    </ul>
   </div>
-</section>
+
+  <!-- Panneau droit -->
+  <div class="auth-split__right">
+    <div class="auth-card">
+      <h1 class="auth-card__title">Connexion</h1>
+      <p class="auth-card__subtitle">Accédez à votre espace personnel</p>
+
+      <div id="alert" class="alert hidden" role="alert" aria-live="assertive"></div>
+
+      <form id="login-form" class="auth-form" novalidate>
+        <div class="form-group">
+          <label for="email">Adresse email</label>
+          <input id="email" name="email" type="email" class="input"
+            placeholder="vous@exemple.fr" autocomplete="email"
+            required aria-required="true" />
+          <span class="field-error" id="email-error" aria-live="polite"></span>
+        </div>
+
+        <div class="form-group">
+          <label for="password">Mot de passe</label>
+          <div style="position:relative">
+            <input id="password" name="password" type="password" class="input"
+              placeholder="••••••••" autocomplete="current-password"
+              required aria-required="true" style="padding-right:44px" />
+            <button type="button" style="position:absolute;right:12px;top:50%;transform:translateY(-50%);color:var(--c-stone);background:none;border:none;cursor:pointer;padding:4px" aria-label="Afficher le mot de passe" onclick="togglePassword(this)">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+            </button>
+          </div>
+          <span class="field-error" id="password-error" aria-live="polite"></span>
+        </div>
+
+        <button type="submit" class="btn btn--primary" id="submit-btn">
+          <span class="btn__text">Se connecter</span>
+          <span class="btn__loader hidden" aria-hidden="true"></span>
+        </button>
+      </form>
+
+      <p class="auth-form__footer">Pas encore de compte ? <a href="/inscription">Créer un compte</a></p>
+    </div>
+  </div>
+
+</div>
 {% endblock %}
 
 {% block scripts %}

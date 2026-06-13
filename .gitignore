@@ -15,6 +15,7 @@ env/
 # Environnement
 .env
 .env.local
+.env.lan
 .env.*.local
 
 # Tests
@@ -41,3 +42,7 @@ logs/
 
 # Uploads
 uploads/
+
+# SQLite (dev local uniquement, la prod utilise PostgreSQL)
+*.db
+*.sqlite3

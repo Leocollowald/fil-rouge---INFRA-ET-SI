@@ -1,6 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException, Request, Response, status
 from sqlalchemy.orm import Session
 
+from app.core.config import settings
 from app.core.database import get_db
 from app.core.security import create_access_token, create_refresh_token, decode_token
 from app.repositories.user_repository import UserRepository
@@ -22,13 +23,22 @@ def register(data: UserCreate, db: Session = Depends(get_db)):
 def login(data: LoginRequest, response: Response, db: Session = Depends(get_db)):
     service = AuthService(db)
     tokens = service.login(data)
+    _secure = not settings.DEBUG
     response.set_cookie(
         key="access_token",
         value=tokens.access_token,
         httponly=True,
-        secure=True,
+        secure=_secure,
         samesite="lax",
         max_age=1800,
+    )
+    response.set_cookie(
+        key="refresh_token",
+        value=tokens.refresh_token,
+        httponly=True,
+        secure=_secure,
+        samesite="lax",
+        max_age=604800,
     )
     return tokens
 
@@ -57,7 +67,7 @@ def refresh(request: Request, response: Response, db: Session = Depends(get_db))
         key="access_token",
         value=new_access,
         httponly=True,
-        secure=True,
+        secure=not settings.DEBUG,
         samesite="lax",
         max_age=1800,
     )

@@ -68,3 +68,12 @@ def delai_vente(
 ):
     """Délai moyen de vente par ville — indicateur prédictif de liquidité."""
     return reports.delai_vente_par_ville(db)
+
+
+@router.get("/predictions")
+def predictions_prix(
+    db: Session = Depends(get_db),
+    _: User = Depends(_require_reports_access),
+):
+    """Prédiction du prix au m² à 3 et 6 mois par ville via régression linéaire (numpy.polyfit)."""
+    return reports.prediction_prix(db)

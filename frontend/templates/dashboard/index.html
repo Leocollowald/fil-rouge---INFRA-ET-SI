@@ -2,32 +2,28 @@
 {% block title %}Mon espace — Y-Plaza{% endblock %}
 
 {% block content %}
-<div class="dashboard-layout container">
+<div class="dashboard-layout">
 
   <!-- Sidebar -->
-  <aside class="dashboard-sidebar" aria-label="Navigation dashboard">
-    <div class="sidebar__user" id="sidebar-user">
-      <div class="avatar" id="sidebar-avatar" aria-hidden="true">?</div>
-      <div>
-        <p class="sidebar__name" id="sidebar-name">Chargement…</p>
-        <p class="sidebar__role" id="sidebar-role"></p>
-      </div>
-    </div>
+  <aside class="sidebar" aria-label="Navigation dashboard">
+    <div class="sidebar__avatar" id="sidebar-avatar" aria-hidden="true">?</div>
 
-    <nav>
-      <ul class="sidebar__menu" role="list">
-        <li><a href="#overview" class="sidebar__link sidebar__link--active" data-tab="overview">Vue d'ensemble</a></li>
-        <li><a href="#favorites" class="sidebar__link" data-tab="favorites">Mes favoris</a></li>
-        <li><a href="#transactions" class="sidebar__link" data-tab="transactions">Mes demandes</a></li>
-        <li class="sidebar__divider agent-only hidden"><span>Agent</span></li>
-        <li class="agent-only hidden"><a href="#my-properties" class="sidebar__link" data-tab="my-properties">Mes annonces</a></li>
-        <li class="agent-only hidden"><a href="#add-property" class="sidebar__link" data-tab="add-property">Ajouter un bien</a></li>
-        <li class="agent-only hidden"><a href="#agent-transactions" class="sidebar__link" data-tab="agent-transactions">Demandes reçues</a></li>
-        <li class="sidebar__divider admin-only hidden"><span>Admin</span></li>
-        <li class="admin-only hidden"><a href="#users" class="sidebar__link" data-tab="users">Utilisateurs</a></li>
-        <li class="admin-only hidden"><a href="#reports" class="sidebar__link" data-tab="reports">Rapports & Stats</a></li>
-      </ul>
-    </nav>
+    <p class="sidebar__divider" id="sidebar-name" style="font-size:13px;font-weight:600;text-transform:none;letter-spacing:0;color:var(--c-ink);padding-top:0">Chargement…</p>
+    <p class="sidebar__divider" id="sidebar-role" style="padding-top:2px;padding-bottom:12px"></p>
+
+    <div class="sidebar__divider">Général</div>
+    <button class="sidebar__link sidebar__link--active" data-tab="overview">Vue d'ensemble</button>
+    <button class="sidebar__link" data-tab="favorites">Mes favoris</button>
+    <button class="sidebar__link" data-tab="transactions">Mes demandes</button>
+
+    <div class="sidebar__divider agent-only hidden">Agent</div>
+    <button class="sidebar__link agent-only hidden" data-tab="my-properties">Mes annonces</button>
+    <button class="sidebar__link agent-only hidden" data-tab="add-property">Ajouter un bien</button>
+    <button class="sidebar__link agent-only hidden" data-tab="agent-transactions">Demandes reçues</button>
+
+    <div class="sidebar__divider admin-only hidden">Administration</div>
+    <button class="sidebar__link admin-only hidden" data-tab="users">Utilisateurs</button>
+    <button class="sidebar__link admin-only hidden" data-tab="reports">Rapports &amp; Stats</button>
   </aside>
 
   <!-- Contenu principal -->
@@ -35,173 +31,212 @@
 
     <!-- Vue d'ensemble -->
     <section id="tab-overview" class="tab-panel" aria-labelledby="overview-title">
-      <h1 id="overview-title">Bonjour, <span id="welcome-name">—</span> 👋</h1>
-      <div class="stats-row" id="overview-stats">
-        <div class="mini-stat"><span class="mini-stat__number" id="stat-favorites">—</span><span>Favoris</span></div>
-        <div class="mini-stat"><span class="mini-stat__number" id="stat-requests">—</span><span>Demandes</span></div>
+      <div class="dashboard-header">
+        <h1 class="dashboard-title">Bonjour, <span id="welcome-name">—</span> 👋</h1>
+        <div class="mini-stats" id="overview-stats">
+          <div class="mini-stat">
+            <p class="mini-stat__number" id="stat-favorites">—</p>
+            <p class="mini-stat__label">Favoris</p>
+          </div>
+          <div class="mini-stat">
+            <p class="mini-stat__number" id="stat-requests">—</p>
+            <p class="mini-stat__label">Demandes</p>
+          </div>
+        </div>
       </div>
-      <div class="recent-activity">
-        <h2>Annonces récentes</h2>
-        <div class="properties-grid" id="overview-properties"></div>
-      </div>
+      <h2 style="font-family:'DM Sans',sans-serif;font-size:15px;font-weight:600;color:var(--c-stone);margin-bottom:16px">Annonces récentes</h2>
+      <div class="properties-grid properties-grid--2col" id="overview-properties"></div>
     </section>
 
     <!-- Favoris -->
     <section id="tab-favorites" class="tab-panel hidden" aria-labelledby="favorites-title">
-      <h1 id="favorites-title">Mes favoris</h1>
-      <div class="properties-grid" id="favorites-list" aria-live="polite"></div>
+      <div class="dashboard-header">
+        <h1 class="dashboard-title">Mes favoris</h1>
+      </div>
+      <div class="properties-grid properties-grid--2col" id="favorites-list" aria-live="polite"></div>
     </section>
 
     <!-- Mes demandes (client) -->
     <section id="tab-transactions" class="tab-panel hidden" aria-labelledby="transactions-title">
-      <h1 id="transactions-title">Mes demandes</h1>
+      <div class="dashboard-header">
+        <h1 class="dashboard-title">Mes demandes</h1>
+      </div>
       <div id="transactions-list" aria-live="polite">
-        <p class="empty-state">Chargement…</p>
+        <p style="color:var(--c-stone)">Chargement…</p>
       </div>
     </section>
 
     <!-- Demandes reçues (agent) -->
     <section id="tab-agent-transactions" class="tab-panel hidden agent-only" aria-labelledby="agent-tx-title">
-      <h1 id="agent-tx-title">Demandes reçues</h1>
+      <div class="dashboard-header">
+        <h1 class="dashboard-title">Demandes reçues</h1>
+      </div>
       <div id="agent-transactions-list" aria-live="polite">
-        <p class="empty-state">Chargement…</p>
+        <p style="color:var(--c-stone)">Chargement…</p>
       </div>
     </section>
 
     <!-- Mes annonces (agent) -->
     <section id="tab-my-properties" class="tab-panel hidden agent-only" aria-labelledby="my-props-title">
-      <h1 id="my-props-title">Mes annonces</h1>
-      <div class="properties-grid" id="my-properties-list" aria-live="polite"></div>
+      <div class="dashboard-header">
+        <h1 class="dashboard-title">Mes annonces</h1>
+      </div>
+      <div class="properties-grid properties-grid--2col" id="my-properties-list" aria-live="polite"></div>
     </section>
 
     <!-- Utilisateurs (admin) -->
     <section id="tab-users" class="tab-panel hidden admin-only" aria-labelledby="users-title">
-      <h1 id="users-title">Gestion des utilisateurs</h1>
-      <div id="users-list" aria-live="polite"><p class="empty-state">Cliquez sur l'onglet pour charger.</p></div>
+      <div class="dashboard-header">
+        <h1 class="dashboard-title">Gestion des utilisateurs</h1>
+      </div>
+      <div id="users-list" aria-live="polite">
+        <p style="color:var(--c-stone)">Cliquez sur l'onglet pour charger.</p>
+      </div>
     </section>
 
     <!-- Rapports & Statistiques (direction + IT) -->
     <section id="tab-reports" class="tab-panel hidden admin-only" aria-labelledby="reports-title">
-      <h1 id="reports-title">Rapports & Statistiques</h1>
-
-      <!-- KPI globaux -->
-      <div class="stats-row" id="reports-kpi">
-        <div class="mini-stat"><span class="mini-stat__number" id="kpi-total">—</span><span>Biens en catalogue</span></div>
-        <div class="mini-stat"><span class="mini-stat__number" id="kpi-disponibles">—</span><span>Disponibles</span></div>
-        <div class="mini-stat"><span class="mini-stat__number" id="kpi-ca">—</span><span>CA finalisé (€)</span></div>
-        <div class="mini-stat"><span class="mini-stat__number" id="kpi-volume">—</span><span>Transactions finalisées</span></div>
-        <div class="mini-stat"><span class="mini-stat__number" id="kpi-pending">—</span><span>Demandes en attente</span></div>
+      <div class="dashboard-header">
+        <h1 class="dashboard-title">Rapports &amp; Statistiques</h1>
+        <div class="mini-stats" id="reports-kpi">
+          <div class="mini-stat">
+            <p class="mini-stat__number" id="kpi-total">—</p>
+            <p class="mini-stat__label">Biens en catalogue</p>
+          </div>
+          <div class="mini-stat">
+            <p class="mini-stat__number" id="kpi-disponibles">—</p>
+            <p class="mini-stat__label">Disponibles</p>
+          </div>
+          <div class="mini-stat">
+            <p class="mini-stat__number" id="kpi-ca">—</p>
+            <p class="mini-stat__label">CA finalisé (€)</p>
+          </div>
+          <div class="mini-stat">
+            <p class="mini-stat__number" id="kpi-volume">—</p>
+            <p class="mini-stat__label">Transactions finalisées</p>
+          </div>
+          <div class="mini-stat">
+            <p class="mini-stat__number" id="kpi-pending">—</p>
+            <p class="mini-stat__label">Demandes en attente</p>
+          </div>
+        </div>
       </div>
 
       <div class="reports-grid">
-        <!-- Ventes par agence -->
         <div class="report-card">
-          <h2 class="report-card__title">CA par agence</h2>
-          <div id="report-agences" class="report-table-wrap"><p class="empty-state">Chargement…</p></div>
+          <p class="report-section__title">CA par agence</p>
+          <div id="report-agences"><p style="color:var(--c-stone);font-size:14px">Chargement…</p></div>
         </div>
-
-        <!-- Prix m² par ville -->
         <div class="report-card">
-          <h2 class="report-card__title">Prix moyen au m² par ville</h2>
-          <div id="report-prix-m2" class="report-table-wrap"><p class="empty-state">Chargement…</p></div>
+          <p class="report-section__title">Prix moyen au m² par ville</p>
+          <div id="report-prix-m2"><p style="color:var(--c-stone);font-size:14px">Chargement…</p></div>
         </div>
-
-        <!-- Biens populaires -->
-        <div class="report-card report-card--full">
-          <h2 class="report-card__title">Biens les plus populaires</h2>
-          <div id="report-populaires" class="report-table-wrap"><p class="empty-state">Chargement…</p></div>
+        <div class="report-card" style="grid-column:1/-1">
+          <p class="report-section__title">Biens les plus populaires</p>
+          <div id="report-populaires"><p style="color:var(--c-stone);font-size:14px">Chargement…</p></div>
         </div>
-
-        <!-- Évolution mensuelle -->
-        <div class="report-card report-card--full">
-          <h2 class="report-card__title">Évolution mensuelle des ventes</h2>
-          <div id="report-mensuel" class="report-table-wrap"><p class="empty-state">Chargement…</p></div>
+        <div class="report-card" style="grid-column:1/-1">
+          <p class="report-section__title">Évolution mensuelle des ventes</p>
+          <div id="report-mensuel"><p style="color:var(--c-stone);font-size:14px">Chargement…</p></div>
         </div>
-
-        <!-- Délai de vente -->
         <div class="report-card">
-          <h2 class="report-card__title">Délai moyen de vente par ville</h2>
-          <div id="report-delai" class="report-table-wrap"><p class="empty-state">Chargement…</p></div>
+          <p class="report-section__title">Délai moyen de vente par ville</p>
+          <div id="report-delai"><p style="color:var(--c-stone);font-size:14px">Chargement…</p></div>
+        </div>
+        <div class="report-card" style="grid-column:1/-1">
+          <p class="report-section__title">Prédiction du prix au m² — tendance 3 et 6 mois</p>
+          <p style="font-size:12px;color:var(--c-stone);margin-bottom:12px">Régression linéaire (numpy.polyfit) sur l'historique des prix. La fiabilité augmente avec le volume de données.</p>
+          <div id="report-predictions"><p style="color:var(--c-stone);font-size:14px">Chargement…</p></div>
         </div>
       </div>
     </section>
 
     <!-- Ajouter un bien (agent) -->
     <section id="tab-add-property" class="tab-panel hidden agent-only" aria-labelledby="add-prop-title">
-      <h1 id="add-prop-title">Ajouter un bien</h1>
-      <form id="add-property-form" class="property-form">
-        <div class="form-grid">
-          <div class="form-group form-group--full">
-            <label for="p-title" class="form-label">Titre de l'annonce *</label>
-            <input id="p-title" name="title" type="text" class="input" required placeholder="Ex: Appartement lumineux 3 pièces centre-ville" />
+      <div class="dashboard-header">
+        <h1 class="dashboard-title">Ajouter un bien</h1>
+      </div>
+      <div class="property-form">
+        <form id="add-property-form">
+          <div class="property-form__grid">
+            <div class="form-group property-form__grid--full">
+              <label for="p-title">Titre de l'annonce *</label>
+              <input id="p-title" name="title" type="text" class="input" required placeholder="Ex: Appartement lumineux 3 pièces centre-ville" />
+            </div>
+            <div class="form-group">
+              <label for="p-type">Type de bien *</label>
+              <select id="p-type" name="property_type" class="select" required>
+                <option value="apartment">Appartement</option>
+                <option value="house">Maison</option>
+                <option value="commercial">Local commercial</option>
+                <option value="land">Terrain</option>
+                <option value="office">Bureau</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="p-tx">Transaction *</label>
+              <select id="p-tx" name="transaction_type" class="select" required>
+                <option value="sale">Vente</option>
+                <option value="rental">Location</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="p-price">Prix (€) *</label>
+              <input id="p-price" name="price" type="number" class="input" required min="1" />
+            </div>
+            <div class="form-group">
+              <label for="p-surface">Surface (m²)</label>
+              <input id="p-surface" name="surface" type="number" class="input" min="1" />
+            </div>
+            <div class="form-group">
+              <label for="p-rooms">Pièces</label>
+              <input id="p-rooms" name="rooms" type="number" class="input" min="1" />
+            </div>
+            <div class="form-group">
+              <label for="p-bedrooms">Chambres</label>
+              <input id="p-bedrooms" name="bedrooms" type="number" class="input" min="0" />
+            </div>
+            <div class="form-group">
+              <label for="p-bathrooms">Salles de bain</label>
+              <input id="p-bathrooms" name="bathrooms" type="number" class="input" min="0" />
+            </div>
+            <div class="form-group">
+              <label for="p-city">Ville *</label>
+              <input id="p-city" name="city" type="text" class="input" required />
+            </div>
+            <div class="form-group">
+              <label for="p-zip">Code postal *</label>
+              <input id="p-zip" name="zip_code" type="text" class="input" required maxlength="5" />
+            </div>
+            <div class="form-group property-form__grid--full">
+              <label for="p-address">Adresse *</label>
+              <input id="p-address" name="address" type="text" class="input" required />
+            </div>
+            <div class="form-group property-form__grid--full">
+              <label for="p-desc">Description</label>
+              <textarea id="p-desc" name="description" class="textarea" rows="4" placeholder="Décrivez le bien…"></textarea>
+            </div>
+            <div class="form-group property-form__grid--full">
+              <label>Photos du bien</label>
+              <label class="upload-zone" for="p-images">
+                <div class="upload-zone__icon">
+                  <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17,8 12,3 7,8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                </div>
+                <p class="upload-zone__label">Glissez vos photos ici ou cliquez pour sélectionner</p>
+                <p style="font-size:12px;color:var(--c-stone);margin-top:6px">JPEG, PNG, WebP — 5 Mo max par photo</p>
+              </label>
+              <input id="p-images" type="file" class="sr-only" multiple accept="image/jpeg,image/png,image/webp" />
+              <div id="image-preview" style="display:flex;flex-wrap:wrap;gap:8px;margin-top:8px" aria-live="polite"></div>
+            </div>
           </div>
-          <div class="form-group">
-            <label for="p-type" class="form-label">Type de bien *</label>
-            <select id="p-type" name="property_type" class="select" required>
-              <option value="apartment">Appartement</option>
-              <option value="house">Maison</option>
-              <option value="commercial">Local commercial</option>
-              <option value="land">Terrain</option>
-              <option value="office">Bureau</option>
-            </select>
-          </div>
-          <div class="form-group">
-            <label for="p-tx" class="form-label">Transaction *</label>
-            <select id="p-tx" name="transaction_type" class="select" required>
-              <option value="sale">Vente</option>
-              <option value="rental">Location</option>
-            </select>
-          </div>
-          <div class="form-group">
-            <label for="p-price" class="form-label">Prix (€) *</label>
-            <input id="p-price" name="price" type="number" class="input" required min="1" />
-          </div>
-          <div class="form-group">
-            <label for="p-surface" class="form-label">Surface (m²)</label>
-            <input id="p-surface" name="surface" type="number" class="input" min="1" />
-          </div>
-          <div class="form-group">
-            <label for="p-rooms" class="form-label">Pièces</label>
-            <input id="p-rooms" name="rooms" type="number" class="input" min="1" />
-          </div>
-          <div class="form-group">
-            <label for="p-bedrooms" class="form-label">Chambres</label>
-            <input id="p-bedrooms" name="bedrooms" type="number" class="input" min="0" />
-          </div>
-          <div class="form-group">
-            <label for="p-bathrooms" class="form-label">Salles de bain</label>
-            <input id="p-bathrooms" name="bathrooms" type="number" class="input" min="0" />
-          </div>
-          <div class="form-group">
-            <label for="p-city" class="form-label">Ville *</label>
-            <input id="p-city" name="city" type="text" class="input" required />
-          </div>
-          <div class="form-group">
-            <label for="p-zip" class="form-label">Code postal *</label>
-            <input id="p-zip" name="zip_code" type="text" class="input" required maxlength="5" />
-          </div>
-          <div class="form-group form-group--full">
-            <label for="p-address" class="form-label">Adresse *</label>
-            <input id="p-address" name="address" type="text" class="input" required />
-          </div>
-          <div class="form-group form-group--full">
-            <label for="p-desc" class="form-label">Description</label>
-            <textarea id="p-desc" name="description" class="textarea" rows="5" placeholder="Décrivez le bien…"></textarea>
-          </div>
-          <div class="form-group form-group--full">
-            <label for="p-images" class="form-label">Photos du bien</label>
-            <input id="p-images" type="file" class="input input--file" multiple accept="image/jpeg,image/png,image/webp" />
-            <p class="form-hint">Formats acceptés : JPEG, PNG, WebP — 5 Mo max par photo</p>
-            <div id="image-preview" class="image-preview-grid" aria-live="polite"></div>
-          </div>
-        </div>
 
-        <div id="form-alert" class="alert hidden" role="alert"></div>
-        <button type="submit" class="btn btn--primary">
-          <span class="btn__text">Publier l'annonce</span>
-          <span class="btn__loader hidden"></span>
-        </button>
-      </form>
+          <div id="form-alert" class="alert hidden" role="alert" style="margin-top:16px"></div>
+          <button type="submit" class="btn btn--primary" style="margin-top:16px">
+            <span class="btn__text">Publier l'annonce</span>
+            <span class="btn__loader hidden"></span>
+          </button>
+        </form>
+      </div>
     </section>
 
   </main>
@@ -210,20 +245,20 @@
 
 {% block scripts %}
 <script>
-  const user = JSON.parse(localStorage.getItem('yplaza_user') || 'null');
   const token = localStorage.getItem('yplaza_token');
 
-  if (!user || !token) {
+  if (!user || !token || !user.first_name) {
+    localStorage.removeItem('yplaza_user');
+    localStorage.removeItem('yplaza_token');
     window.location.href = '/connexion';
   }
 
-  // Affichage infos utilisateur
   const agentRoles = ['commercial', 'direction', 'it_support'];
   const adminRoles = ['direction', 'it_support'];
 
   document.getElementById('sidebar-name').textContent = `${user.first_name} ${user.last_name}`;
   document.getElementById('sidebar-role').textContent = formatRole(user.role);
-  document.getElementById('sidebar-avatar').textContent = user.first_name[0].toUpperCase();
+  document.getElementById('sidebar-avatar').textContent = (user.first_name || '?')[0].toUpperCase();
   document.getElementById('welcome-name').textContent = user.first_name;
 
   if (agentRoles.includes(user.role)) {
@@ -252,98 +287,124 @@
     });
   });
 
+  // Chargement de la vue d'ensemble
+  (async () => {
+    try {
+      const res = await fetch('/api/v1/properties/?per_page=4');
+      const data = await res.json();
+      document.getElementById('overview-properties').innerHTML = data.items.map(renderMiniCard).join('');
+      requestAnimationFrame(() => {
+        document.querySelectorAll('#overview-properties .property-card').forEach(el => el.classList.add('visible'));
+      });
+    } catch {}
+  })();
+
   // Chargement favoris
   async function loadFavorites() {
     const container = document.getElementById('favorites-list');
-    container.innerHTML = '<p>Chargement…</p>';
+    container.innerHTML = '<p style="color:var(--c-stone)">Chargement…</p>';
     const res = await fetch('/api/v1/properties/me/favorites', {
       headers: { Authorization: `Bearer ${token}` },
     });
-    if (!res.ok) { container.innerHTML = '<p class="empty-state">Impossible de charger les favoris.</p>'; return; }
+    if (!res.ok) { container.innerHTML = '<p style="color:var(--c-stone)">Impossible de charger les favoris.</p>'; return; }
     const items = await res.json();
     document.getElementById('stat-favorites').textContent = items.length;
     container.innerHTML = items.length
       ? items.map(renderMiniCard).join('')
-      : '<p class="empty-state">Vous n\'avez aucun favori pour le moment.</p>';
+      : '<p style="color:var(--c-stone)">Vous n\'avez aucun favori pour le moment.</p>';
+    requestAnimationFrame(() => {
+      container.querySelectorAll('.property-card').forEach(el => el.classList.add('visible'));
+    });
   }
 
   // Chargement des annonces de l'agent
   async function loadMyProperties() {
     const container = document.getElementById('my-properties-list');
-    container.innerHTML = '<p>Chargement…</p>';
+    container.innerHTML = '<p style="color:var(--c-stone)">Chargement…</p>';
     const res = await fetch('/api/v1/properties/me', {
       headers: { Authorization: `Bearer ${token}` },
     });
-    if (!res.ok) { container.innerHTML = '<p class="empty-state">Impossible de charger vos annonces.</p>'; return; }
+    if (!res.ok) { container.innerHTML = '<p style="color:var(--c-stone)">Impossible de charger vos annonces.</p>'; return; }
     const items = await res.json();
     container.innerHTML = items.length
       ? items.map(renderAgentCard).join('')
-      : '<p class="empty-state">Vous n\'avez aucune annonce publiée.</p>';
+      : '<p style="color:var(--c-stone)">Vous n\'avez aucune annonce publiée.</p>';
+    requestAnimationFrame(() => {
+      container.querySelectorAll('.property-card').forEach(el => el.classList.add('visible'));
+    });
   }
 
   // Chargement des utilisateurs (admin)
   async function loadUsers() {
     const container = document.getElementById('users-list');
     if (!container) return;
-    container.innerHTML = '<p>Chargement…</p>';
+    container.innerHTML = '<p style="color:var(--c-stone)">Chargement…</p>';
     const res = await fetch('/api/v1/users/', {
       headers: { Authorization: `Bearer ${token}` },
     });
-    if (!res.ok) { container.innerHTML = '<p class="empty-state">Accès refusé.</p>'; return; }
+    if (!res.ok) { container.innerHTML = '<p style="color:var(--c-stone)">Accès refusé.</p>'; return; }
     const users = await res.json();
-    container.innerHTML = users.length ? renderUsersTable(users) : '<p class="empty-state">Aucun utilisateur.</p>';
+    container.innerHTML = users.length ? renderUsersTable(users) : '<p style="color:var(--c-stone)">Aucun utilisateur.</p>';
   }
 
   function renderUsersTable(users) {
     const roleOptions = ['client','commercial','direction','communication_marketing','administratif_rh','it_support'];
-    return `<div class="table-wrapper"><table class="data-table">
-      <thead><tr><th>Nom</th><th>Email</th><th>Rôle</th><th>Statut</th><th>Action</th></tr></thead>
+    return `<div class="data-table-wrap"><table class="data-table">
+      <thead><tr><th scope="col">Nom</th><th scope="col">Email</th><th scope="col">Rôle</th><th scope="col">Statut</th><th scope="col">Action</th></tr></thead>
       <tbody>${users.map(u => `
         <tr>
           <td>${u.first_name} ${u.last_name}</td>
           <td>${u.email}</td>
           <td>
-            <select class="select select--sm" onchange="setUserRole('${u.id}', this.value)">
+            <select class="select" style="width:auto;font-size:12px;padding:4px 28px 4px 8px;height:auto" aria-label="Rôle de ${u.first_name} ${u.last_name}" onchange="setUserRole('${u.id}', this.value)">
               ${roleOptions.map(r => `<option value="${r}" ${r === u.role ? 'selected' : ''}>${formatRole(r)}</option>`).join('')}
             </select>
           </td>
-          <td><span class="status-badge ${u.is_active ? 'status-badge--active' : 'status-badge--inactive'}">${u.is_active ? 'Actif' : 'Inactif'}</span></td>
+          <td><span style="font-size:11px;font-weight:600;padding:3px 8px;border-radius:9999px;background:${u.is_active ? '#D1FAE5' : '#FEE2E2'};color:${u.is_active ? '#065F46' : '#991B1B'}">${u.is_active ? 'Actif' : 'Inactif'}</span></td>
           <td><a href="/annonces?agent=${u.id}" class="btn btn--ghost btn--sm">Voir annonces</a></td>
         </tr>`).join('')}
       </tbody>
     </table></div>`;
   }
 
+  async function setUserRole(userId, role) {
+    const res = await fetch(`/api/v1/users/${userId}/role?role=${role}`, {
+      method: 'PATCH',
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    if (!res.ok) alert('Impossible de modifier le rôle.');
+  }
+
   // Demandes du client
   async function loadMyTransactions() {
     const container = document.getElementById('transactions-list');
-    container.innerHTML = '<p>Chargement…</p>';
+    container.innerHTML = '<p style="color:var(--c-stone)">Chargement…</p>';
     const res = await fetch('/api/v1/transactions/me', {
       headers: { Authorization: `Bearer ${token}` },
     });
-    if (!res.ok) { container.innerHTML = '<p class="empty-state">Impossible de charger vos demandes.</p>'; return; }
+    if (!res.ok) { container.innerHTML = '<p style="color:var(--c-stone)">Impossible de charger vos demandes.</p>'; return; }
     const items = await res.json();
     document.getElementById('stat-requests').textContent = items.length;
     container.innerHTML = items.length
       ? items.map(renderTransactionRow).join('')
-      : '<p class="empty-state">Vous n\'avez aucune demande en cours.</p>';
+      : '<p style="color:var(--c-stone)">Vous n\'avez aucune demande en cours.</p>';
   }
 
   // Demandes reçues (agent)
   async function loadAgentTransactions() {
     const container = document.getElementById('agent-transactions-list');
-    container.innerHTML = '<p>Chargement…</p>';
+    container.innerHTML = '<p style="color:var(--c-stone)">Chargement…</p>';
     const res = await fetch('/api/v1/transactions/agent', {
       headers: { Authorization: `Bearer ${token}` },
     });
-    if (!res.ok) { container.innerHTML = '<p class="empty-state">Impossible de charger les demandes.</p>'; return; }
+    if (!res.ok) { container.innerHTML = '<p style="color:var(--c-stone)">Impossible de charger les demandes.</p>'; return; }
     const items = await res.json();
     container.innerHTML = items.length
-      ? `<div class="table-wrapper"><table class="data-table">
+      ? `<div class="data-table-wrap"><table class="data-table">
           <thead><tr><th>Bien</th><th>Offre</th><th>Statut</th><th>Date</th><th>Action</th></tr></thead>
           <tbody>${items.map(t => `
             <tr>
-              <td><a href="/annonces/${t.property_id}" class="link">${t.property_id.substring(0,8)}</a></td>
+              <td><a href="/annonces/${t.property_id}" style="color:var(--c-sage);font-weight:500">${t.property_id.substring(0,8)}</a></td>
               <td>${parseInt(t.offered_price).toLocaleString('fr-FR')} €</td>
               <td><span class="tx-badge tx-badge--${t.status}">${formatTxStatus(t.status)}</span></td>
               <td>${new Date(t.created_at).toLocaleDateString('fr-FR')}</td>
@@ -356,7 +417,7 @@
             </tr>`).join('')}
           </tbody>
         </table></div>`
-      : '<p class="empty-state">Aucune demande reçue.</p>';
+      : '<p style="color:var(--c-stone)">Aucune demande reçue.</p>';
   }
 
   async function updateTx(txId, newStatus) {
@@ -370,15 +431,15 @@
   }
 
   function renderTransactionRow(t) {
-    return `<div class="tx-card">
-      <div class="tx-card__main">
-        <a href="/annonces/${t.property_id}" class="tx-card__link">Voir le bien →</a>
-        <p class="tx-card__price">Offre : <strong>${parseInt(t.offered_price).toLocaleString('fr-FR')} €</strong></p>
-        ${t.notes ? `<p class="tx-card__notes">${t.notes}</p>` : ''}
+    return `<div style="background:var(--c-white);border-radius:var(--radius-md);padding:16px 20px;margin-bottom:12px;box-shadow:var(--shadow-card);display:flex;align-items:center;justify-content:space-between;gap:16px">
+      <div>
+        <a href="/annonces/${t.property_id}" style="color:var(--c-sage);font-weight:600;font-size:14px">Voir le bien →</a>
+        <p style="font-size:14px;margin-top:4px">Offre : <strong>${parseInt(t.offered_price).toLocaleString('fr-FR')} €</strong></p>
+        ${t.notes ? `<p style="font-size:13px;color:var(--c-stone);margin-top:4px">${t.notes}</p>` : ''}
       </div>
-      <div class="tx-card__meta">
+      <div style="text-align:right;flex-shrink:0">
         <span class="tx-badge tx-badge--${t.status}">${formatTxStatus(t.status)}</span>
-        <p class="tx-card__date">${new Date(t.created_at).toLocaleDateString('fr-FR')}</p>
+        <p style="font-size:12px;color:var(--c-stone);margin-top:6px">${new Date(t.created_at).toLocaleDateString('fr-FR')}</p>
       </div>
     </div>`;
   }
@@ -387,15 +448,65 @@
     return { pending:'En attente', accepted:'Acceptée', rejected:'Refusée', completed:'Finalisée', cancelled:'Annulée' }[s] || s;
   }
 
-  async function setUserRole(userId, role) {
-    const res = await fetch(`/api/v1/users/${userId}/role?role=${role}`, {
-      method: 'PATCH',
-      headers: { Authorization: `Bearer ${token}` },
-    });
-    if (!res.ok) alert('Impossible de modifier le rôle.');
+  function renderMiniCard(p) {
+    const img = p.images && p.images.length
+      ? (p.images.find(i => i.is_primary)?.url || p.images[0].url)
+      : '/static/images/placeholder.svg';
+    const price = parseInt(p.price).toLocaleString('fr-FR') + ' €' +
+      (p.transaction_type === 'rental' ? '/mois' : '');
+    const txLabel = p.transaction_type === 'sale' ? 'Vente' : 'Location';
+
+    return `<article class="property-card">
+      <a href="/annonces/${p.id}">
+        <div class="property-card__media">
+          <img src="${img}" alt="${p.title}" class="property-card__img" loading="lazy" />
+          <span class="badge badge--${p.transaction_type} property-card__badge">${txLabel}</span>
+        </div>
+        <div class="property-card__body">
+          <h3 class="property-card__title">${p.title}</h3>
+          <p class="property-card__location">${p.city}</p>
+        </div>
+      </a>
+      <div class="property-card__footer">
+        <span class="property-card__price">${price}</span>
+        <button class="btn-favorite" aria-label="Ajouter aux favoris" data-id="${p.id}" onclick="toggleFavorite(this)">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+        </button>
+      </div>
+    </article>`;
   }
 
-  // Prévisualisation des images sélectionnées
+  function renderAgentCard(p) {
+    const img = p.images && p.images.length
+      ? (p.images.find(i => i.is_primary)?.url || p.images[0].url)
+      : '/static/images/placeholder.svg';
+    const price = parseInt(p.price).toLocaleString('fr-FR') + ' €' +
+      (p.transaction_type === 'rental' ? '/mois' : '');
+    const txLabel = p.transaction_type === 'sale' ? 'Vente' : 'Location';
+    const STATUS = { available: 'Disponible', under_offer: 'Offre en cours', sold: 'Vendu', rented: 'Loué' };
+
+    return `<article class="property-card">
+      <a href="/annonces/${p.id}">
+        <div class="property-card__media">
+          <img src="${img}" alt="${p.title}" class="property-card__img" loading="lazy" />
+          <span class="badge badge--${p.transaction_type} property-card__badge">${txLabel}</span>
+        </div>
+        <div class="property-card__body">
+          <h3 class="property-card__title">${p.title}</h3>
+          <p class="property-card__location">${p.city} (${p.zip_code})</p>
+          <span class="badge badge--${p.status}" style="margin-top:8px;display:inline-flex">${STATUS[p.status] || p.status}</span>
+        </div>
+      </a>
+      <div class="property-card__footer">
+        <span class="property-card__price">${price}</span>
+        <button class="btn-favorite" aria-label="Ajouter aux favoris" data-id="${p.id}" onclick="toggleFavorite(this)">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+        </button>
+      </div>
+    </article>`;
+  }
+
+  // Prévisualisation des images
   document.getElementById('p-images').addEventListener('change', (e) => {
     const preview = document.getElementById('image-preview');
     preview.innerHTML = '';
@@ -404,7 +515,7 @@
       reader.onload = ev => {
         const img = document.createElement('img');
         img.src = ev.target.result;
-        img.className = 'image-preview-thumb';
+        img.style.cssText = 'width:80px;height:60px;object-fit:cover;border-radius:var(--radius-sm)';
         img.alt = file.name;
         preview.appendChild(img);
       };
@@ -412,7 +523,7 @@
     });
   });
 
-  // Ajout d'un bien (étape 1 : JSON, étape 2 : images)
+  // Ajout d'un bien
   document.getElementById('add-property-form').addEventListener('submit', async (e) => {
     e.preventDefault();
     const form = e.target;
@@ -426,7 +537,6 @@
       if (v && k !== 'images') payload[k] = ['price','surface','rooms','bedrooms','bathrooms'].includes(k) ? Number(v) : v;
     });
 
-    // Étape 1 — Créer le bien
     const res = await fetch('/api/v1/properties/', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
@@ -441,7 +551,6 @@
       return;
     }
 
-    // Étape 2 — Uploader les images si sélectionnées
     const files = document.getElementById('p-images').files;
     if (files.length > 0) {
       const fd = new FormData();
@@ -453,8 +562,8 @@
       });
       if (!imgRes.ok) {
         btn.disabled = false;
-        alertEl.textContent = 'Annonce créée mais erreur lors de l\'upload des images.';
-        alertEl.className = 'alert alert--warning';
+        alertEl.textContent = "Annonce créée mais erreur lors de l'upload des images.";
+        alertEl.className = 'alert alert--info';
         return;
       }
     }
@@ -467,41 +576,12 @@
     setTimeout(() => loadMyProperties(), 500);
   });
 
-  function renderMiniCard(p) {
-    const price = parseInt(p.price).toLocaleString('fr-FR') + ' €';
-    return `<article class="property-card">
-      <a href="/annonces/${p.id}" class="property-card__link">
-        <div class="property-card__body">
-          <h3 class="property-card__title">${p.title}</h3>
-          <p class="property-card__location">${p.city}</p>
-          <p class="property-card__price">${price}</p>
-        </div>
-      </a>
-    </article>`;
-  }
-
-  function renderAgentCard(p) {
-    const price = parseInt(p.price).toLocaleString('fr-FR') + ' €';
-    const STATUS = { available: 'Disponible', under_offer: 'Offre en cours', sold: 'Vendu', rented: 'Loué' };
-    return `<article class="property-card">
-      <a href="/annonces/${p.id}" class="property-card__link">
-        <div class="property-card__body">
-          <h3 class="property-card__title">${p.title}</h3>
-          <p class="property-card__location">${p.city} (${p.zip_code})</p>
-          <p class="property-card__price">${price}</p>
-          <span class="badge badge--${p.status}" style="margin-top:8px;display:inline-block">${STATUS[p.status] || p.status}</span>
-        </div>
-      </a>
-    </article>`;
-  }
-
   // ---------------------------------------------------------------------------
   // Rapports & Statistiques
   // ---------------------------------------------------------------------------
   async function loadReports() {
     const headers = { Authorization: `Bearer ${token}` };
 
-    // KPI catalogue
     const catRes = await fetch('/api/v1/reports/catalogue', { headers });
     if (catRes.ok) {
       const cat = await catRes.json();
@@ -510,7 +590,6 @@
       document.getElementById('kpi-pending').textContent = cat.transactions_en_attente ?? '—';
     }
 
-    // Ventes (CA + par agence + mensuel)
     const ventesRes = await fetch('/api/v1/reports/ventes', { headers });
     if (ventesRes.ok) {
       const ventes = await ventesRes.json();
@@ -519,67 +598,75 @@
 
       document.getElementById('report-agences').innerHTML = ventes.par_agence.length
         ? renderReportTable(['Agence', 'CA (€)', 'Volume'], ventes.par_agence.map(r => [
-            r.label || 'N/A',
-            parseInt(r.ca).toLocaleString('fr-FR'),
-            r.volume,
+            r.label || 'N/A', parseInt(r.ca).toLocaleString('fr-FR'), r.volume,
           ]))
-        : '<p class="empty-state">Aucune vente finalisée.</p>';
+        : '<p style="color:var(--c-stone);font-size:14px">Aucune vente finalisée.</p>';
 
       document.getElementById('report-mensuel').innerHTML = ventes.par_mois.length
         ? renderReportTable(['Mois', 'CA (€)', 'Volume'], ventes.par_mois.map(r => [
-            r.label,
-            parseInt(r.ca).toLocaleString('fr-FR'),
-            r.volume,
+            r.label, parseInt(r.ca).toLocaleString('fr-FR'), r.volume,
           ]))
-        : '<p class="empty-state">Aucune donnée mensuelle.</p>';
+        : '<p style="color:var(--c-stone);font-size:14px">Aucune donnée mensuelle.</p>';
     }
 
-    // Prix m² par ville
     const m2Res = await fetch('/api/v1/reports/prix-m2', { headers });
     if (m2Res.ok) {
       const m2 = await m2Res.json();
       document.getElementById('report-prix-m2').innerHTML = m2.length
         ? renderReportTable(['Ville', 'Biens', 'Prix moyen', 'Prix m² moyen'], m2.map(r => [
-            r.ville,
-            r.nb_biens,
+            r.ville, r.nb_biens,
             parseInt(r.prix_moyen).toLocaleString('fr-FR') + ' €',
             parseInt(r.prix_m2_moyen).toLocaleString('fr-FR') + ' €/m²',
           ]))
-        : '<p class="empty-state">Pas assez de données.</p>';
+        : '<p style="color:var(--c-stone);font-size:14px">Pas assez de données.</p>';
     }
 
-    // Biens populaires
     const popRes = await fetch('/api/v1/reports/populaires?limit=10', { headers });
     if (popRes.ok) {
       const pop = await popRes.json();
       document.getElementById('report-populaires').innerHTML = pop.length
         ? renderReportTable(['Bien', 'Ville', 'Prix', 'Favoris', 'Demandes'], pop.map(r => [
-            `<a href="/annonces/${r.id}" class="link">${r.title}</a>`,
-            r.city,
-            parseInt(r.price).toLocaleString('fr-FR') + ' €',
-            r.nb_favoris,
-            r.nb_demandes,
+            `<a href="/annonces/${r.id}" style="color:var(--c-sage);font-weight:500">${r.title}</a>`,
+            r.city, parseInt(r.price).toLocaleString('fr-FR') + ' €', r.nb_favoris, r.nb_demandes,
           ]))
-        : '<p class="empty-state">Aucun bien en catalogue.</p>';
+        : '<p style="color:var(--c-stone);font-size:14px">Aucun bien en catalogue.</p>';
     }
 
-    // Délai de vente
     const delaiRes = await fetch('/api/v1/reports/delai-vente', { headers });
     if (delaiRes.ok) {
       const delai = await delaiRes.json();
       document.getElementById('report-delai').innerHTML = delai.length
         ? renderReportTable(['Ville', 'Ventes', 'Délai moyen (jours)'], delai.map(r => [
-            r.ville,
-            r.nb_ventes,
-            r.delai_moyen_jours,
+            r.ville, r.nb_ventes, r.delai_moyen_jours,
           ]))
-        : '<p class="empty-state">Pas encore de ventes finalisées.</p>';
+        : '<p style="color:var(--c-stone);font-size:14px">Pas encore de ventes finalisées.</p>';
+    }
+
+    const predRes = await fetch('/api/v1/reports/predictions', { headers });
+    if (predRes.ok) {
+      const pred = await predRes.json();
+      const TENDANCE_ICON = { hausse: '↑', baisse: '↓', stable: '→' };
+      const TENDANCE_COLOR = { hausse: '#166534', baisse: '#991B1B', stable: 'var(--c-stone)' };
+      document.getElementById('report-predictions').innerHTML = pred.length
+        ? renderReportTable(
+            ['Ville', 'Prix m² actuel', 'Tendance', 'Var./mois', 'Préd. 3 mois', 'Préd. 6 mois', 'Fiabilité'],
+            pred.map(r => [
+              r.ville,
+              parseInt(r.prix_m2_actuel).toLocaleString('fr-FR') + ' €/m²',
+              `<span style="font-weight:600;color:${TENDANCE_COLOR[r.tendance]||'inherit'}">${TENDANCE_ICON[r.tendance]||''} ${r.tendance}</span>`,
+              (r.variation_mensuelle >= 0 ? '+' : '') + parseInt(r.variation_mensuelle).toLocaleString('fr-FR') + ' €',
+              parseInt(r.prediction_3m).toLocaleString('fr-FR') + ' €/m²',
+              parseInt(r.prediction_6m).toLocaleString('fr-FR') + ' €/m²',
+              `<span style="font-size:11px;padding:2px 8px;border-radius:9999px;background:${r.fiabilite==='élevée'?'#D1FAE5':r.fiabilite==='modérée'?'#FEF3C7':'#FEE2E2'};color:${r.fiabilite==='élevée'?'#065F46':r.fiabilite==='modérée'?'#92400E':'#991B1B'}">${r.fiabilite}</span>`,
+            ])
+          )
+        : '<p style="color:var(--c-stone);font-size:14px">Pas assez de données pour établir une prédiction.</p>';
     }
   }
 
   function renderReportTable(headers, rows) {
-    return `<div class="table-wrapper"><table class="data-table">
-      <thead><tr>${headers.map(h => `<th>${h}</th>`).join('')}</tr></thead>
+    return `<div class="data-table-wrap"><table class="data-table">
+      <thead><tr>${headers.map(h => `<th scope="col">${h}</th>`).join('')}</tr></thead>
       <tbody>${rows.map(r => `<tr>${r.map(c => `<td>${c}</td>`).join('')}</tr>`).join('')}</tbody>
     </table></div>`;
   }

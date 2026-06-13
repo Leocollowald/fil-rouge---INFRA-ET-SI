@@ -25,7 +25,7 @@ from app.core.config import settings
 from app.core.database import SessionLocal
 from app.core.security import hash_password
 from app.models.agency import Agency
-from app.models.property import Favorite, Property, PropertyStatus, PropertyType, TransactionType
+from app.models.property import Favorite, Property, PropertyImage, PropertyStatus, PropertyType, TransactionType
 from app.models.transaction import Transaction, TransactionStatus
 from app.models.user import User, UserRole
 
@@ -224,6 +224,36 @@ def create_transactions(db: Session, props: list[Property], clients: list[User])
     print(f"  ✓ {tx_count} transactions créées")
 
 
+def register_existing_images(db: Session, props: list[Property]) -> None:
+    """Enregistre en DB les images déjà présentes dans uploads/properties/{id}/ si property_images est vide."""
+    BASE = Path(__file__).resolve().parent.parent
+    UPLOAD_DIR = BASE / "uploads" / "properties"
+    ACCEPTED = {".jpg", ".jpeg", ".png", ".webp"}
+    count = 0
+
+    for prop in props:
+        existing = db.query(PropertyImage).filter(PropertyImage.property_id == prop.id).count()
+        if existing > 0:
+            continue
+
+        prop_dir = UPLOAD_DIR / str(prop.id)
+        if not prop_dir.exists():
+            continue
+
+        images = sorted(
+            [f for f in prop_dir.iterdir() if f.suffix.lower() in ACCEPTED],
+            key=lambda p: p.name,
+        )
+        for idx, img in enumerate(images):
+            url = f"/uploads/properties/{prop.id}/{img.name}"
+            db.add(PropertyImage(property_id=prop.id, url=url, is_primary=(idx == 0)))
+            count += 1
+
+    if count:
+        db.flush()
+        print(f"  ✓ {count} images existantes enregistrées en DB")
+
+
 def create_favorites(db: Session, props: list[Property], clients: list[User]) -> None:
     fav_count = 0
     for client in clients:
@@ -252,6 +282,7 @@ def run():
         props = create_properties(db, agences, users["agents"])
         create_transactions(db, props, users["clients"])
         create_favorites(db, props, users["clients"])
+        register_existing_images(db, props)
         db.commit()
         print("\n✅ Seed terminé avec succès !")
         print("\nComptes créés :")
